@@ -1,0 +1,8 @@
+attributed-to: claude
+ids: A1.6 reject, A3.2 accept
+
+defect:
+A1.6 prescribes the bootstrap PR body as plan-clauses A1.1,A1.2,A1.3,A1.4,A1.5, with no B clause. A1.1 and A1.2 create src/Genesis/, and A3.2 says a src/ change with no B clause fails. The PR-body job enforces A3.2 and fails the bootstrap PR written to the letter of A1.6. The bootstrap PR adds B1.3, the clause A1.2 cites for Genesis.psm1.
+
+replacement:
+**A1.6** — Run `./build.ps1`. PR to `main`, body `agent: claude` / `plan-clauses: A1.1,A1.2,A1.3,A1.4,A1.5,B1.3`. Stop until merged.
