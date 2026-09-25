@@ -1,0 +1,86 @@
+[
+  {
+    "heading": "## A0. Purpose",
+    "sha256": "8ab1de8dcb0825ce23e9010b1582834905611c9c8b87fc0d0ad119c8405c7cae"
+  },
+  {
+    "heading": "## A1. Bootstrap commit (`claude/bootstrap`)",
+    "sha256": "f506a0eef15d950320b7beb4a4e8cafdd251b5dd9aa99bf6638b2a254a2cad0f"
+  },
+  {
+    "heading": "## A2. The copy procedure",
+    "sha256": "eea57885bccded85a8b5ae60f13a178dc9f3bf19a9a3cf16eeecc1130bc9a26b"
+  },
+  {
+    "heading": "## A3. Branch and PR rules",
+    "sha256": "217d88eca11b8429b2dbdc42519371e45c0db820b347866fcec55fb50bd8cc7a"
+  },
+  {
+    "heading": "## A4. Payload contents",
+    "sha256": "6d479777517309fce2e23847554545c45837b56d7827e508bbad50b2697378fe"
+  },
+  {
+    "heading": "## A5. Order of work after A1",
+    "sha256": "5ef0b219a4caf5332bc196e12229b2d73ed3b690fc1493cd697b7053e656b01c"
+  },
+  {
+    "heading": "## A6. Do not",
+    "sha256": "db1cbb75696fe31c88cc6644f67a660af72377cca6dcd44287fe38015aca0bd0"
+  },
+  {
+    "heading": "## B0. Three things and a fourth",
+    "sha256": "af58482ce715f4532aa4910d1a31d4dcfaa528781d321b1ccd01110db295343f"
+  },
+  {
+    "heading": "## B1. Layout",
+    "sha256": "2b751239a552072c725b9e58a96e012b913c0a33ffcac09491532e715cc2eba8"
+  },
+  {
+    "heading": "## B2. Lock files",
+    "sha256": "b83cc47d084cd6259018b21758eb7a7a7e78edd9d0acc18678a953e875db0b32"
+  },
+  {
+    "heading": "## B3. Build tasks",
+    "sha256": "788502bc0b8662db049a605794c0bfd3681eef7ee57f3b7e9f409311be6bed49"
+  },
+  {
+    "heading": "## B4. Payload contract",
+    "sha256": "b4ccf46a6fa3a4434b0b803c7444f5b289f04264183eaa4a6c8f0e3a2e028ede"
+  },
+  {
+    "heading": "## B5. Keys",
+    "sha256": "9958fc4c2ef400c634f34026381aed0d85d47b79b2b2db508c4c6f1b3a0f5f58"
+  },
+  {
+    "heading": "## B6. This file",
+    "sha256": "45e0b690c704c8ce1074ee1b214c377245665d54f415b620ffea1b5181138298"
+  },
+  {
+    "heading": "## B7. Plan tests",
+    "sha256": "888945003d0d0a5e34ac2d46228015de8c13d7b1f5b83a7f107e7aba251589b2"
+  },
+  {
+    "heading": "## B8. Agents and branches",
+    "sha256": "0a13d09d39b68352d5693e51500cb199c7f4d90e9fbff04e48fec59d1e7926cc"
+  },
+  {
+    "heading": "## B9. Open",
+    "sha256": "7405d11c5c6cde34f729f480cc4f7c64e08e76537c77f78534b956bbc22bb5d4"
+  },
+  {
+    "heading": "## B10. Audit chain (the playground's own Heaven)",
+    "sha256": "ab4a6a3229c2e70e0b74be4af7db62338f8522286ddf7ec7e2b6dcc3d85c4a37"
+  },
+  {
+    "heading": "## B11. Grade (the product)",
+    "sha256": "855d9b2f3728c19422c81942f4308294b04c9315c3b4a39263ecab707b7290ac"
+  },
+  {
+    "heading": "## Frozen",
+    "sha256": "6ac30d1acdc4175afdb6b9d1b2e9eb25fba9436f60911770bd97a92fcf82aa09"
+  },
+  {
+    "heading": "## Amendments",
+    "sha256": "dda72097d45ea1d25a2f7fb088599a4fdc419e98fddf45e54d306360466631f1"
+  }
+]

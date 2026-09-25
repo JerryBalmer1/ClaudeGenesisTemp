@@ -1,0 +1,8 @@
+attributed-to: claude
+ids: S7.8 reject
+
+defect:
+S7.8 says "Module exit classes, ten:" and then lists eleven names: SCHEMA, ACTOR_ILLEGAL, CHAIN_BREAK, SIG_FAIL, HASH_MISMATCH, NAME_MISMATCH, CONTENT_ABSENT, DISCREPANCY, REVOKED, WALK_LIMIT, IO. A test that holds the module to S7.8 cannot satisfy both the word and the list. The list is the one every other clause cites (S2.2, S3.3, S7.1 to S7.7, S12, S13), so the word is the defect.
+
+replacement:
+**S7.8** — Module exit classes: `SCHEMA`, `ACTOR_ILLEGAL`, `CHAIN_BREAK`, `SIG_FAIL`, `HASH_MISMATCH`, `NAME_MISMATCH`, `CONTENT_ABSENT`, `DISCREPANCY`, `REVOKED`, `WALK_LIMIT`, `IO`. Every non-zero exit prints the class name as the second output line. `MUTANTS_SURVIVED` / `MUTANTS_KILLED` are printed by the Heaven runner, never by the module.

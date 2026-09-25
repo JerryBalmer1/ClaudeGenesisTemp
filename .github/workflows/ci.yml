@@ -1,0 +1,97 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Keep committed bytes
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: gpg >= 2.4
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $need = [version]'2.4'
+          function Get-GpgVersion {
+              if (-not (Get-Command gpg -CommandType Application -ErrorAction Ignore)) { return $null }
+              if (@(gpg --version)[0] -match '(\d+\.\d+(\.\d+)?)') { [version]$Matches[1] }
+          }
+          $have = Get-GpgVersion
+          if (-not $have -or $have -lt $need) {
+              if ($IsWindows) {
+                  choco install gnupg -y --no-progress
+                  $bin = @('C:\Program Files\GnuPG\bin', 'C:\Program Files (x86)\GnuPG\bin') | Where-Object { Test-Path $_ } | Select-Object -First 1
+                  if (-not $bin) { throw 'gnupg installed but its bin directory was not found' }
+                  Add-Content -Path $env:GITHUB_PATH -Value $bin
+                  $env:PATH = "$bin;$env:PATH"
+              }
+              else {
+                  sudo apt-get update
+                  sudo apt-get install -y gnupg
+              }
+              $have = Get-GpgVersion
+          }
+          if (-not $have -or $have -lt $need) { throw "gpg $have < $need" }
+          "gpg $have"
+      - name: Build
+        shell: pwsh
+        run: ./build.ps1
+
+  pr-body:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: PR body (A3.2, B8.2)
+        shell: pwsh
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+          HEAD_REF: ${{ github.head_ref }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $PSNativeCommandUseErrorActionPreference = $true
+          $prefix = ($env:HEAD_REF -split '/')[0]
+          if ($prefix -notin 'claude', 'grok', 'fable', 'opus' -or $env:HEAD_REF -notlike "$prefix/*") {
+              throw "branch '$env:HEAD_REF' is not under claude/, grok/, fable/, or opus/ (B8.2)"
+          }
+          $lines = @(("$env:PR_BODY") -split '\r?\n')
+          if ($lines.Count -lt 2) { throw 'PR body needs agent: on line 1 and plan-clauses: on line 2 (A3.2)' }
+          if ($lines[0].Trim() -cne "agent: $prefix") { throw "line 1 must be 'agent: $prefix', got '$($lines[0].Trim())' (B8.2)" }
+          if ($lines[1].Trim() -notmatch '^plan-clauses:\s*(\S.*)$') { throw 'line 2 must be plan-clauses: <ids> (A3.2)' }
+          $ids = @($Matches[1] -split '\s*,\s*' | Where-Object { $_ })
+          $known = @([regex]::Matches((Get-Content -Raw GOD_PLAN.md), '\*\*([AB]\d+\.\d+)\*\*') | ForEach-Object { $_.Groups[1].Value })
+          $unknown = @($ids | Where-Object { $_ -cnotmatch '^[AB]\d+\.\d+$' -or $_ -cnotin $known })
+          if ($unknown) { throw "plan-clauses not in GOD_PLAN.md: $($unknown -join ', ') (P-15)" }
+          $changed = @(git diff --name-only "$env:BASE_SHA...$env:HEAD_SHA")
+          if (($changed | Where-Object { $_ -like 'src/*' }) -and -not ($ids | Where-Object { $_ -clike 'B*' })) {
+              throw 'src/ changed with no B clause in plan-clauses (A3.2)'
+          }
+          "agent: $prefix; plan-clauses: $($ids -join ', ')"
+
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Keep committed bytes
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@v4
+      - name: Audit inbox names (B10.4)
+        shell: pwsh
+        run: ./build.ps1 -Task Audit

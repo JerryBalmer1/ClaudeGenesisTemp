@@ -1,0 +1,8 @@
+attributed-to: claude
+ids: B5.4 reject
+
+defect:
+B5.4 says P-05 greps GOD_PLAN.md (among other paths) for the phrase BEGIN PGP. B5.4 itself contains that phrase, so P-05 as written is red against the file that defines it, at every commit. The bootstrap P-05 matches the armor line prefix (five hyphens followed by the phrase) instead, which GOD_PLAN.md does not contain. That is a deviation from the letter of B5.4 until this is answered.
+
+replacement:
+**B5.4** — No key material in git. P-05 greps `src/`, `tests/`, `.github/`, `.agents/`, `audit/`, `GOD_PLAN.md`, `SPEC.md` for an OpenPGP armor header line (five hyphens, then `BEGIN PGP`); P-15b greps the tree except `legacy/` for an armor header line naming a private key block.

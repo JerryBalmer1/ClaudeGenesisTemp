@@ -1,0 +1,9 @@
+attributed-to: claude
+ids: A1.1 reject, A4 reject
+
+defect:
+The audit inbox names files by the SHA-256 of their bytes (B10.4), P-13 pins file hashes (B2.1), and Receive compares file hashes (B4.3). None of that survives a Windows checkout with core.autocrlf=true, the Git for Windows default: text files are rewritten LF to CRLF in the working tree, so every inbox name, pin, and manifest hash mismatches on Windows only. A1.1 creates no .gitattributes, and the one in the old root moved under legacy/ledger/ and no longer applies to the root. The bootstrap CI sets core.autocrlf false before checkout, but that protects CI only, not a clone of the playground or of ClaudeChain.
+
+replacement:
+**A1.1** — add `.gitattributes` to the created set, containing exactly `* -text`.
+**A4** — add `.gitattributes` to the payload list.

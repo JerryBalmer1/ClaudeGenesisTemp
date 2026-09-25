@@ -23,3 +23,8 @@ __pycache__/
 # Receipts: the chain is local and append-only. Keep the folder, never the file.
 .ledger/*
 !.ledger/.gitkeep
+
+# Genesis (GOD_PLAN A1.1)
+.heaven/
+.tools/
+out/
