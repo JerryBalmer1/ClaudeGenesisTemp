@@ -1,0 +1,14 @@
+# .worktreeinclude — files to copy into git worktrees
+# Docs: https://docs.anthropic.com/en/docs/claude-code/worktrees
+#
+# When Claude Code creates a worktree (EnterWorktree), it copies these paths into the
+# new worktree so the isolated branch has the config it needs.
+# One path per line. Globs are supported.
+#
+# Examples:
+#   .claude/settings.json
+#   .claude/rules/
+#   CLAUDE.md
+#   .mcp.json
+#   requirements.txt
+#   src/ledger/Ledger.psd1

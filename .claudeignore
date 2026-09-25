@@ -1,0 +1,19 @@
+# .claudeignore — Claude Code ignore patterns
+# Docs: https://docs.anthropic.com/en/docs/claude-code/settings#claudeignore
+#
+# Same syntax as .gitignore. Files matching these patterns are hidden from Claude Code's
+# file tools (Read/Write/Edit/Grep/Glob) and from the context it sees.
+# Use this to keep secrets, build artifacts, and junk out of the model's reach.
+#
+# Examples:
+#   .env
+#   .env.*
+#   secrets/
+#   *.pem
+#   node_modules/
+#   dist/
+#   build/
+#   __pycache__/
+#   *.pyc
+#   .DS_Store
+#   Thumbs.db

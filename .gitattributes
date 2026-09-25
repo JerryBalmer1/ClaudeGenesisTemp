@@ -1,0 +1,36 @@
+# Normalize to LF in the index; .gitattributes beats core.autocrlf=true.
+* text=auto
+
+*.ps1  text eol=lf
+*.psm1 text eol=lf
+*.psd1 text eol=lf
+*.py   text eol=lf
+*.pyi  text eol=lf
+*.md   text eol=lf
+*.json text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+*.toml text eol=lf
+*.txt  text eol=lf
+
+# Receipts and corpora. The chain hashes payload bytes and never the terminator, so CRLF
+# would not break a verify - but Add-LedgerRecord writes LF and checks for a trailing 0x0A,
+# and a CRLF round-trip through git would leave stray 0x0D inside lines this repo claims
+# are LF-only. .ledger/ledger.jsonl is gitignored; this is here for every other .jsonl
+# (fixtures, corpora) and so the rule does not depend on the ignore staying in place.
+*.jsonl text eol=lf
+*.gitignore     text eol=lf
+*.gitattributes text eol=lf
+
+# Binary: never touched by eol normalization.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.zip binary
+*.gz  binary
+*.pyc binary
+*.pyd binary
+*.exe binary
+*.dll binary

@@ -1,0 +1,25 @@
+# Claude personal junk
+CLAUDE.local.md
+.claude/settings.local.json
+.claude/agent-memory-local/
+
+# Machine sweeps / dumps — host inventory, MACs, IPs, process paths
+diagnostics/
+*.sweep.txt
+
+.kilo/
+
+# Sandbox: throwaway git repos and scratch runs. Test scripts stay; junk does not.
+tests/sandbox/**
+!tests/sandbox/.gitkeep
+!tests/sandbox/*.ps1
+examples/sandbox/**
+!examples/sandbox/.gitkeep
+
+# Python scratch
+__pycache__/
+*.pyc
+
+# Receipts: the chain is local and append-only. Keep the folder, never the file.
+.ledger/*
+!.ledger/.gitkeep
