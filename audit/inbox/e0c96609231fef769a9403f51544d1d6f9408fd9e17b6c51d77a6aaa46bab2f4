@@ -1,0 +1,8 @@
+attributed-to: claude
+ids: A1.4 reject, B7 accept
+
+defect:
+B7 marks P-03, P-04, P-12, P-13, P-17 as "both": shipped in the payload and run in playground and target. A4 ships only tests/plan/target/, and A1.4 places P-04, P-12, P-13, P-17 under tests/plan/playground/, so those four never reach the target and "both" is false for them. P-03 is placed under target/ by the handoff, which A1.2 permits. The bootstrap follows A1.4 as written.
+
+replacement:
+**A1.4** — `tests/plan/playground/`: P-01, P-05, P-09, P-11, P-16, P-22, P-23. `tests/plan/target/`: P-03, P-04, P-12, P-13, P-17, P-21. P-03 per A1.2. All green except P-03.

@@ -1,0 +1,1 @@
+Opus works on `opus/*` branches and owns `src/` and `tests/unit/` (B8.4): the `Genesis` module and the unit tests that exercise its private layer. Anything outside those paths goes through a PR under its owner's prefix.

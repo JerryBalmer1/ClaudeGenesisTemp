@@ -1,0 +1,1 @@
+Claude works on `claude/*` branches and owns `SPEC.md` and `tests/chain/` (B8.4): the normative specification of the module and the chain tests that hold the module to it. Anything outside those paths goes through a PR under its owner's prefix.

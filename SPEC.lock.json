@@ -1,0 +1,62 @@
+[
+  {
+    "heading": "## S1. Public surface",
+    "sha256": "a5bd65e05a775b8a04b21b9b1b406915fa5723484798c507635c6746d67476f3"
+  },
+  {
+    "heading": "## S2. Heaven",
+    "sha256": "13d3849303250b371bffb147d6ab560c6819bbcd91a74fde82a9912d4a08febf"
+  },
+  {
+    "heading": "## S3. Receipt schema",
+    "sha256": "6b6348994cfaff8b4487ffef431f2f393eb4a4649190b33915655aaa34b484e1"
+  },
+  {
+    "heading": "## S4. Keys, fingerprints, gpg",
+    "sha256": "4ade4177b831d6f7712d092b9bc9eb882677a97595653478749b6f4384b70a30"
+  },
+  {
+    "heading": "## S5. Canonicalization",
+    "sha256": "0b80b47c9f5adf063f8d0bc7bc73cef3bc22738af75bb9b98d3ece7a7eddac57"
+  },
+  {
+    "heading": "## S6. Assembler and output",
+    "sha256": "ce63898f37db1b7f8f1bfbbbbd15328466d5b9ed54bd980b7de5182c109e761c"
+  },
+  {
+    "heading": "## S7. Verification",
+    "sha256": "368692fab9297c08dce0f4ea3dba9c8ddeda9734622f0b55203cc21d33eb0137"
+  },
+  {
+    "heading": "## S8. Root revocation",
+    "sha256": "b109cfeb87b29dfa4f4fd9c74403b3c425fed48df7376eadd1a095376ceb2795"
+  },
+  {
+    "heading": "## S9. Cold copy",
+    "sha256": "84415cc958530f63bd94b92ad3493b1ee2227e1dbee756196a7b1e4a6904edbb"
+  },
+  {
+    "heading": "## S10. Discrepancy and resolution",
+    "sha256": "13855eacdf5de4e33fac04b7ee47c164eb59f27421a7037436d0bf37aadf3aa2"
+  },
+  {
+    "heading": "## S11. Carry",
+    "sha256": "6fb5e1f4e03fe3d97447de5c96fa15fbf3d91c0d528ecf09e9eece00306d4fde"
+  },
+  {
+    "heading": "## S12. Chain tests (`tests/chain/C-*.ps1`)",
+    "sha256": "a29aedb8dc19d7f8af024e8c15b46db0f260d483049eac42c8583b31d9c5047f"
+  },
+  {
+    "heading": "## S13. Mutants (`tests/heaven/M-*.ps1`)",
+    "sha256": "49296230abbb41646e4dad01d5e34ba3fe83bdb7cc1746f5c1660b6c973c122a"
+  },
+  {
+    "heading": "## S14. Heaven nominal sequence",
+    "sha256": "12fcfe7ea3d0a7301ccd76b11e128b84c095633b38f42d0b775f173ac1860c86"
+  },
+  {
+    "heading": "## S15. Not in v1",
+    "sha256": "194a4565ae1bc7b1800b4506f095151d82be53a1fc235a8cb8c05f94566987d0"
+  }
+]

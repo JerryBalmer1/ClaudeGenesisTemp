@@ -1,0 +1,8 @@
+attributed-to: claude
+ids: B10.6 reject, B3.4 accept
+
+defect:
+B3.4 puts Audit in the default whenever audit/ exists, and A1.1 creates audit/ at bootstrap. B10.6 lists the checks Audit runs, and the first is Test-GenesisChain -HeavenPath audit, which cannot exist before B10.4 arms. B10.5 describes the pre-arm record but not what Audit checks pre-arm, and B11.7 says a check that could not run is a fail. Read literally, the default is red from the bootstrap until arming, and Payload can never run on the way to arming. The bootstrap Audit checks only that every inbox filename is the SHA-256 of its bytes while receipts/ is empty, and fails with AUDIT_ARMED once receipts/ is populated and the B10.6 checks are still absent.
+
+replacement:
+**B10.6** — `Audit` task, in default whenever `audit/` exists. Before arming (`receipts/` empty): every `inbox/` filename is the SHA-256 of its bytes; nothing else is checked, and that is not a pass for anything but naming. After arming: `Test-GenesisChain -HeavenPath audit` is 0; every ID in the diff of `SPEC.md`, `GOD_PLAN.md`, `src/` since the tip's `source_commit` appears in some receipt's review file; no ID marked `accept` in a parent receipt is changed by its child; every reject receipt has a closure child or is listed open; the tip is not older than the newest `SPEC.md`/`GOD_PLAN.md`/`src/` commit; `inbox/` is empty at merge. Any line printed is a failed build. That printout is the judgment. There is no `-SkipAudit`.

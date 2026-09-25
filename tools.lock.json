@@ -1,0 +1,24 @@
+{
+  "InvokeBuild": {
+    "Version": "5.14.23",
+    "Sha256": "a4c9b093583282ce12cfea0d3ce6299a45f9c9cc3f7818246cb39f743ff737d4"
+  },
+  "Pester": {
+    "Version": "5.9.1",
+    "Sha256": "8dd4060fc3bc895f05bd655e4ab82abe346de54a4e6415dfb727cc8378672b69"
+  },
+  "PSScriptAnalyzer": {
+    "Version": "1.25.0",
+    "Sha256": "14e634c828eb98efb9f40b2918ba90f139ed5eccdf663a2a747736d996995d60"
+  },
+  "gpg": {
+    "MinVersion": "2.4"
+  },
+  "pwsh": {
+    "MinVersion": "7.4"
+  },
+  "heaven": {
+    "TimeoutSeconds": 600
+  },
+  "pins": {}
+}

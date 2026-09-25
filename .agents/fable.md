@@ -1,0 +1,1 @@
+Fable works on `fable/*` branches and owns additions to `tests/plan/` (B8.4): the plan tests that hold the playground and the target to `GOD_PLAN.md`. Anything outside that path goes through a PR under its owner's prefix.
