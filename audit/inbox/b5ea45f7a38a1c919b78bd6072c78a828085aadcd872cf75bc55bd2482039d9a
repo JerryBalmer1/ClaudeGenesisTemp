@@ -1,0 +1,7 @@
+# Operator summary — 2026-09-26
+
+- #6 closed (47-file stack, do not reopen).
+- #11 open: grok/payload-receive-main, inbox only, off current main. Four checks pending.
+- Autopsy prompt issued to Fable 5.1 (app) and Opus 5.5 (VS Code). Fable skipped it and started editing build.ps1, then crashed. Opus never saw it (empty panel / no repo in workspace).
+- This inbox note records the failure. Filename = SHA-256 of these bytes.
+- Next: after #11 merges, one file only — Genesis.build.ps1 Payload + Receive. No chain tests until S1.1 exists. No fake green.
