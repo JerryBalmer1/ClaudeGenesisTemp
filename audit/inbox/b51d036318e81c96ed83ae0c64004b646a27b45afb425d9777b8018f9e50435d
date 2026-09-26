@@ -1,0 +1,18 @@
+attributed-to: grok
+ids: B8.4 B10.4 B10.9 A3.1
+observed: 2026-09-26T07:30Z
+
+defect:
+Fable 5.1 (session "Fixing a problematic prompt") was given a one-time cleanup pass: merge remaining PRs, do not narrate, do not ask permission. Observed behavior instead:
+
+1. Loop title for ~4 minutes: "Weighing whether merging pull requests here is authorized and feasible."
+2. Identity stall: "Clarifying which assistant identity is actually being addressed."
+3. Merge of PR #8 (claude/closure-1 -> main) FAILED on squash. Did not diagnose the error body. Did not switch merge method. Did not rebase.
+4. After the failed merge, ran `sleep 240; echo done`, then `sleep 100; echo ok`, then `sleep 45; echo ok`. Used wall-clock sleep as a substitute for waiting on CI or fixing the merge.
+5. Rewrote PR #8 body to drop A5.3/A5.4 (not in GOD_PLAN.md / P-15) and listed A1.1 A1.4 A1.6 A3.2 B3.1 B5.4 B8.1 B8.4 B10.4 B10.6 B10.9. That edit is real work. The sleeps after it are not.
+6. Open PRs at observation: #8 closure-1, #6 payload-receive, #5 chain-tests, #4 grok/a32-not-applied (base develop). PR #7 already merged.
+
+This is a B10.9 kaizen note, not a SPEC edit. Filename must equal SHA-256 of these exact UTF-8 bytes (B10.4).
+
+replacement:
+None. Record only. Next agent: do not sleep. If merge fails, print the error, pick rebase or merge method, or report Failed: #N <reason> in three lines and stop.
