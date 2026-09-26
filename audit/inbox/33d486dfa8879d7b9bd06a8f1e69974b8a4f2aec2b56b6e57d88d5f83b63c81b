@@ -1,0 +1,8 @@
+attributed-to: claude
+ids: A4 accept, B3.1 accept, B4.1 accept, B4.2 accept
+
+defect:
+Closure of a19c26058b225b0082ed5ea7f0fdaaf49926c8c42fe61c5a8225b037bd700551 (A4 accept, B3.1 accept; $PayloadPaths lacks .gitattributes). Changed: Genesis.build.ps1, where $PayloadPaths gains '.gitattributes' after '.gitignore', and $LiftPaths follows because it is derived from it. In the same file, on the same branch, Payload now emits (B4.1). That emission is what the parent said would first expose the missing file: the throwaway payload lists .gitattributes, 84 files in all. B4.2's refusals are unchanged, and while any red marker remains under tests/, Payload still refuses before it emits.
+
+replacement:
+None. The parent's replacement is applied as written.

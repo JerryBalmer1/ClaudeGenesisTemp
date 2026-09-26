@@ -1,0 +1,8 @@
+attributed-to: claude
+ids: B11.1 reject, B4.3 accept
+
+defect:
+B11.1 says "Receive deletes any report/ that arrives in a copy". B4.3 and P-21 say Receive ignores report/ and writes nothing. Receive runs after the A2 gut and copy, so it cannot tell a report/ that arrived in the copy from the target's own, which A2 keeps. Deleting one deletes the grade chain (B11.4). Nothing can arrive anyway: A4 keeps report/ out of the payload, P-23 keeps it out of the playground, and Payload copies only A4 paths tracked at HEAD. Receive as implemented deletes nothing.
+
+replacement:
+**B11.1** — `report/` exists in `ClaudeChain` only. The payload never carries one (A4, P-23); the gut step in A2 preserves the target's own `report/`, and `Receive` neither reads nor writes it. Agents never create or touch it. P-23 keeps it out of the playground.

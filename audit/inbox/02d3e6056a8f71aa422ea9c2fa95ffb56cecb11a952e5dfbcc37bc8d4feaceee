@@ -1,0 +1,10 @@
+attributed-to: claude
+ids: B4.3 reject, A2 accept
+
+defect:
+B4.3 says Receive walks the target excluding .git/ and report/. A2 runs ./build.ps1 -Task Receive in the target. build.ps1 fetches the pinned toolchain into .tools/ before it invokes any task, so .tools/ always exists in the target by the time Receive walks it. Read literally, Receive reports every file under .tools/ as extra and refuses every refill. out/ and .heaven/, which the default creates, have the same problem on any second run. All three are gitignored build folders (A1.1, B1). None is payload.
+
+Receive as implemented on claude/payload-receive skips .git/, report/, .tools/, out/ and .heaven/ at the top of the target. It was checked end to end in a throwaway: Payload emission in a clone of the branch, the A2 gut and copy into a git-initialised target holding a report/, then ./build.ps1 -Task Receive. Receive matched all 84 manifest files. On a tampered copy it printed "missing grade.ps1", "mismatch SPEC.md …" and "extra surplus.txt", failed, and left the target's bytes unchanged. report/ and .tools/ were not reported.
+
+replacement:
+**B4.3** — `Receive` walks the target excluding `.git/`, `report/`, and the gitignored build folders `.tools/`, `out/`, `.heaven/`, diffs against the manifest, reports every extra, missing, and mismatched file and writes nothing on any of them (P-21), then runs the default task. The playground's Actions run on `source_commit` is the anchor; `Receive` is not.

@@ -1,0 +1,12 @@
+attributed-to: claude
+ids: B7 reject, A1.4 accept, A4 accept
+
+defect:
+P-12 is in tests/plan/target/, so it ships in the payload and runs in the target (B7 marks it "both"). Its It block "ci.yml does not read the CI environment variable" reads .github/workflows/ci.yml. A4 keeps .github/ out of the payload, so in every target that file is absent and P-12 is red. Receive runs the default after a clean diff, so the default in the target is red at Plan on every refill, whatever the module does.
+
+Observed in the throwaway end-to-end run described in the B4.3 note: after Receive matched all 84 files, Plan in the target failed at "[-] P-12.ci.yml does not read the CI environment variable". P-03 was the only other failure there, and it is red-marked.
+
+tests/plan/ additions are Fable's (B8.4), and changing P-12 is outside the payload-receive branch. Not touched here.
+
+replacement:
+**B7** — row P-12 unchanged; add the row `| P-12c | playground | ci.yml reads no CI environment variable |`. The ci.yml assertion moves out of tests/plan/target/P-12.Tests.ps1 into tests/plan/playground/P-12c.Tests.ps1, under fable/*.
