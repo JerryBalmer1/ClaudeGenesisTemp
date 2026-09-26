@@ -24,12 +24,16 @@ $PayloadPaths = @(
     'GOD_PLAN.md', 'GOD_PLAN.lock.json', 'SPEC.md', 'SPEC.lock.json',
     'tools.lock.json', 'payload.manifest.json',
     'src/Genesis', 'tests/unit', 'tests/chain', 'tests/heaven', 'tests/fixtures', 'tests/plan/target',
-    '.gitignore'
+    '.gitignore', '.gitattributes'
 )
 # B3.1. Liftable set = A4 minus these.
 $LiftPaths = @($PayloadPaths | Where-Object { $_ -notin 'payload.manifest.json', 'grade.ps1', 'tests/plan/target' })
 
 $RedMarker = '^\s*#\s*status:\s*red\s*$'
+
+# B4.3. Receive walks the target without these top-level folders: git internals, the target's own grade
+# (B11.1), and the gitignored build folders build.ps1 and the default create before Receive runs.
+$ReceiveSkipPaths = @('.git', 'report', '.tools', 'out', '.heaven')
 
 function Get-GenesisDefaultTask {
     # B3.4. The tree decides; no switch does.
@@ -319,12 +323,76 @@ task Payload {
         throw "Payload: refused, $($refusals.Count) reason(s) (B4.2)"
     }
     Invoke-Build -Task . -File $BuildFile
-    throw 'Payload: emission not implemented; see B4.1'
+
+    # B4.1. out/payload/ is exactly the A4 set, copied unchanged; a missing A4 path is red, not skipped.
+    $out = Join-Path $BuildRoot 'out/payload'
+    if (Test-Path -LiteralPath $out) { Remove-Item -LiteralPath $out -Recurse -Force }
+    $null = New-Item -ItemType Directory -Path $out -Force
+    foreach ($p in $PayloadPaths) {
+        $src = Join-Path $BuildRoot $p
+        if (-not (Test-Path -LiteralPath $src)) { throw "Payload: A4 path missing: $p" }
+        $dest = Join-Path $out $p
+        $null = New-Item -ItemType Directory -Path (Split-Path $dest) -Force
+        Copy-Item -LiteralPath $src -Destination $dest -Recurse
+    }
+
+    # B4.1. Manifest: sorted ordinal, forward slashes, lists itself with an empty hash.
+    $manifestName = 'payload.manifest.json'
+    $paths = [string[]]@(
+        @(Get-ChildItem -LiteralPath $out -Recurse -File -Force |
+                ForEach-Object { [IO.Path]::GetRelativePath($out, $_.FullName).Replace('\', '/') } |
+                Where-Object { $_ -ne $manifestName }) + $manifestName
+    )
+    [Array]::Sort($paths, [StringComparer]::Ordinal)
+    $entries = @(foreach ($p in $paths) {
+            $sha = if ($p -eq $manifestName) { '' } else { (Get-FileHash -LiteralPath (Join-Path $out $p) -Algorithm SHA256).Hash.ToLowerInvariant() }
+            [ordered]@{ path = $p; sha256 = $sha }
+        })
+    $manifest = [ordered]@{
+        genesis_version = (Import-PowerShellDataFile -Path $Manifest).ModuleVersion
+        source_commit   = (git -C $BuildRoot rev-parse HEAD)
+        files           = $entries
+    }
+    $json = ((ConvertTo-Json -InputObject $manifest -Depth 4) -replace "`r`n", "`n") + "`n"
+    foreach ($target in (Join-Path $out $manifestName), (Join-Path $BuildRoot "out/$manifestName")) {
+        [IO.File]::WriteAllText($target, $json, [Text.UTF8Encoding]::new($false))
+    }
+    Write-Build Green "Payload: out/payload/ ($($entries.Count) file(s)); out/$manifestName; source_commit $($manifest.source_commit)"
 }
 
 # Synopsis: target only. Diff the tree against payload.manifest.json, then run the default (B4.3).
 task Receive {
-    throw 'Receive: not implemented; see B4.3'
+    $manifestPath = Join-Path $BuildRoot 'payload.manifest.json'
+    if (-not (Test-Path -LiteralPath $manifestPath -PathType Leaf)) { throw 'Receive: missing input payload.manifest.json (B4.3)' }
+    $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json -AsHashtable
+    if (-not $manifest.ContainsKey('files')) { throw 'Receive: payload.manifest.json has no files array (B4.1)' }
+    $expected = @{}
+    foreach ($entry in @($manifest.files)) { $expected[[string]$entry.path] = [string]$entry.sha256 }
+
+    # Walk the target, pruning the B4.3 skip list at the top level only.
+    $actual = @{}
+    foreach ($item in Get-ChildItem -LiteralPath $BuildRoot -Force | Where-Object Name -NotIn $ReceiveSkipPaths) {
+        $files = if ($item.PSIsContainer) { Get-ChildItem -LiteralPath $item.FullName -Recurse -File -Force } else { $item }
+        foreach ($f in @($files)) {
+            $actual[(Get-GenesisRelativePath $f.FullName)] = (Get-FileHash -LiteralPath $f.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+        }
+    }
+
+    # Every difference is reported before the refusal; nothing is written on any of them (P-21).
+    $all = [string[]]@(@($expected.Keys) + @($actual.Keys) | Select-Object -Unique)
+    [Array]::Sort($all, [StringComparer]::Ordinal)
+    $lines = [Collections.Generic.List[string]]::new()
+    foreach ($p in $all) {
+        if (-not $expected.ContainsKey($p)) { $lines.Add("extra: $p"); continue }
+        if (-not $actual.ContainsKey($p)) { $lines.Add("missing: $p"); continue }
+        if ($expected[$p] -ne '' -and $expected[$p] -ne $actual[$p]) { $lines.Add("mismatch: $p expected $($expected[$p]) got $($actual[$p])") }
+    }
+    if ($lines.Count) {
+        $lines | ForEach-Object { Write-Build Red "Receive: $_" }
+        throw "Receive: refused, $($lines.Count) difference(s); nothing written (B4.3)"
+    }
+    Write-Build Green "Receive: $($all.Count) file(s) match payload.manifest.json; running the default"
+    Invoke-Build -Task . -File $BuildFile
 }
 
 # Synopsis: ClaudeChain CI only. Runs grade.ps1 (B11.3).
