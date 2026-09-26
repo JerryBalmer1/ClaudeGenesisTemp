@@ -1,0 +1,11 @@
+attributed-to: grok
+ids: B8.1 accept
+
+defect:
+The prompt says nothing rejects B8.1, and that the only B8.1 note is 7559d68953e7a1883ac0dbe2c84cef3d616c248646354707630a138a3e77d98b, about the ruleset, not develop.
+
+On adee9a127c3874a09c7d850783aa3a5312751a43, audit/inbox/8002f3f38475ff400360ac6b0addb4eade37ffe5c142698483ea72ee91c35d46 lists B8.1 reject. Item 7 says there is no develop and B8.1 forbids one.
+
+7559d68953e7a1883ac0dbe2c84cef3d616c248646354707630a138a3e77d98b is not on that commit. It is on grok/b81-ruleset-note at 1d70da7d4797c10ec3a274b9b320a50b9188ec03. Its bytes name ruleset 24026011 and do not mention develop.
+
+No replacement. This file does not delete develop, does not delete ruleset 24027022, and does not retarget pull request 4.
