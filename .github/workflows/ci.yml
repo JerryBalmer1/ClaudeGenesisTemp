@@ -15,6 +15,7 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
     steps:
       - name: Keep committed bytes
         run: git config --global core.autocrlf false
@@ -30,12 +31,22 @@ jobs:
               if (-not (Get-Command gpg -CommandType Application -ErrorAction Ignore)) { return $null }
               if (@(gpg --version)[0] -match '(\d+\.\d+(\.\d+)?)') { [version]$Matches[1] }
           }
+          # Git for Windows' MSYS gpg (a /-rooted Home:) passes the version check, but its gpg-agent does not
+          # start under a native parent. Windows needs native GnuPG first on PATH.
+          function Test-MsysGpg { $IsWindows -and [bool](@(gpg --version) -match '^Home: /') }
           $have = Get-GpgVersion
-          if (-not $have -or $have -lt $need) {
+          if (-not $have -or $have -lt $need -or (Test-MsysGpg)) {
               if ($IsWindows) {
-                  choco install gnupg -y --no-progress
-                  $bin = @('C:\Program Files\GnuPG\bin', 'C:\Program Files (x86)\GnuPG\bin') | Where-Object { Test-Path $_ } | Select-Object -First 1
-                  if (-not $bin) { throw 'gnupg installed but its bin directory was not found' }
+                  # The GnuPG NSIS installer hangs on the runner. Let choco fetch and checksum the package without
+                  # running its install script, then unpack the installer with 7-Zip.
+                  choco install gnupg -y --no-progress --skip-automation-scripts
+                  $exe = Get-ChildItem -Path "$env:ChocolateyInstall\lib\gnupg\tools" -Filter 'gnupg-w32-*.exe' | Select-Object -First 1
+                  if (-not $exe) { throw 'gnupg package fetched but its installer was not found' }
+                  $root = Join-Path $env:RUNNER_TEMP 'gnupg'
+                  & "$env:ProgramFiles\7-Zip\7z.exe" x -y "-o$root" $exe.FullName | Out-Null
+                  if ($LASTEXITCODE) { throw "7z exited $LASTEXITCODE unpacking $($exe.Name)" }
+                  $bin = Get-ChildItem -Path $root -Recurse -Filter 'gpg.exe' | Select-Object -First 1 | ForEach-Object DirectoryName
+                  if (-not $bin) { throw "gpg.exe not found under $root" }
                   Add-Content -Path $env:GITHUB_PATH -Value $bin
                   $env:PATH = "$bin;$env:PATH"
               }
@@ -46,7 +57,8 @@ jobs:
               $have = Get-GpgVersion
           }
           if (-not $have -or $have -lt $need) { throw "gpg $have < $need" }
-          "gpg $have"
+          if (Test-MsysGpg) { throw "gpg first on PATH is MSYS: $((Get-Command gpg -CommandType Application | Select-Object -First 1).Source)" }
+          "gpg $have at $((Get-Command gpg -CommandType Application | Select-Object -First 1).Source)"
       - name: Build
         shell: pwsh
         run: ./build.ps1
@@ -69,8 +81,9 @@ jobs:
           $ErrorActionPreference = 'Stop'
           $PSNativeCommandUseErrorActionPreference = $true
           $prefix = ($env:HEAD_REF -split '/')[0]
-          if ($prefix -notin 'claude', 'grok', 'fable', 'opus' -or $env:HEAD_REF -notlike "$prefix/*") {
-              throw "branch '$env:HEAD_REF' is not under claude/, grok/, fable/, or opus/ (B8.2)"
+          # B8.2 agent prefixes, plus jerry/ for the code owner of main (B8.1).
+          if ($prefix -notin 'claude', 'grok', 'fable', 'opus', 'jerry' -or $env:HEAD_REF -notlike "$prefix/*") {
+              throw "branch '$env:HEAD_REF' is not under claude/, grok/, fable/, opus/, or jerry/ (B8.1, B8.2)"
           }
           $lines = @(("$env:PR_BODY") -split '\r?\n')
           if ($lines.Count -lt 2) { throw 'PR body needs agent: on line 1 and plan-clauses: on line 2 (A3.2)' }
