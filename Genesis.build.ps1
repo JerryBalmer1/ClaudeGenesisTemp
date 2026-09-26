@@ -199,6 +199,28 @@ task Audit {
     Write-Build Green 'Audit: pre-arm (B10.5); receipts/ empty; inbox names are their SHA-256'
 }
 
+# Synopsis: every audit/inbox/ name is the SHA-256 of its bytes (B10.4); every evidence: line names an existing file. Not in default.
+task VerifyInbox {
+    $inbox = Join-Path $BuildRoot 'audit/inbox'
+    if (-not (Test-Path -LiteralPath $inbox -PathType Container)) { throw 'VerifyInbox: missing input audit/inbox/' }
+    $lines = [Collections.Generic.List[string]]::new()
+    $files = @(Get-ChildItem -Path $inbox -File -Force | Where-Object Name -NE '.gitkeep' | Sort-Object Name)
+    foreach ($f in $files) {
+        $hash = (Get-FileHash -LiteralPath $f.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+        if ($f.Name -cne $hash) { $lines.Add("INBOX_NAME audit/inbox/$($f.Name) sha256=$hash (B10.4)") }
+        # Header is the lines before the first blank line; evidence paths are repo-relative.
+        foreach ($line in [IO.File]::ReadAllText($f.FullName, [Text.UTF8Encoding]::new($false)) -split '\r?\n') {
+            if ($line -eq '') { break }
+            if ($line -match '^evidence:\s*(\S.*?)\s*$' -and -not (Test-Path -LiteralPath (Join-Path $BuildRoot $Matches[1]) -PathType Leaf)) {
+                $lines.Add("INBOX_EVIDENCE audit/inbox/$($f.Name) evidence=$($Matches[1]) missing")
+            }
+        }
+    }
+    foreach ($l in $lines) { Write-Build Red $l }
+    if ($lines.Count) { throw "VerifyInbox: $($lines.Count) line(s) printed" }
+    Write-Build Green "VerifyInbox: $($files.Count) file(s); names are their SHA-256; evidence present"
+}
+
 # Synopsis: tests/unit/; gpg in TestDrive: allowed; git forbidden.
 task Unit {
     $dir = Join-Path $BuildRoot 'tests/unit'
