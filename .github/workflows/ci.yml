@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
+    types: [opened, synchronize, reopened, edited]
 
 permissions:
   contents: read
@@ -94,7 +95,7 @@ jobs:
           $unknown = @($ids | Where-Object { $_ -cnotmatch '^[AB]\d+\.\d+$' -or $_ -cnotin $known })
           if ($unknown) { throw "plan-clauses not in GOD_PLAN.md: $($unknown -join ', ') (P-15)" }
           $changed = @(git diff --name-only "$env:BASE_SHA...$env:HEAD_SHA")
-          if (($changed | Where-Object { $_ -like 'src/*' }) -and -not ($ids | Where-Object { $_ -clike 'B*' })) {
+          if (($changed | Where-Object { $_ -like 'src/*' }) and -not ($ids | Where-Object { $_ -clike 'B*' })) {
               throw 'src/ changed with no B clause in plan-clauses (A3.2)'
           }
           "agent: $prefix; plan-clauses: $($ids -join ', ')"
