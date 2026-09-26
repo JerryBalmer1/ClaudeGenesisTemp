@@ -240,6 +240,7 @@ task Heaven {
     if (-not $files) { $missing += 'tests/heaven/M-*.ps1' }
     if ($missing) { throw "Heaven: missing input $($missing -join ', ') (S13, S14)" }
     & $nominal
+    if ($LASTEXITCODE) { throw "Heaven: nominal runner exited $LASTEXITCODE" }
     Invoke-GenesisPester -Label Heaven -File $files
 }
 
