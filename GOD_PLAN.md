@@ -14,17 +14,17 @@ You are building a **payload** copied unchanged into an empty `ClaudeChain` and 
 
 ## A1. Bootstrap commit (`claude/bootstrap`)
 
-**A1.1** — Create exactly: `SPEC.md`, `SPEC.lock.json`, `GOD_PLAN.md`, `GOD_PLAN.lock.json`, `tools.lock.json`, `build.ps1`, `Genesis.build.ps1`, `grade.ps1`, `payload.manifest.json` (`{"files":[]}`), `src/Genesis/{Genesis.psd1,Genesis.psm1,Public/.gitkeep,Private/.gitkeep,schemas/.gitkeep}`, `tests/plan/playground/.gitkeep`, `tests/plan/target/.gitkeep`, `tests/{unit,chain,heaven}/.gitkeep`, `tests/fixtures/temptation/.gitkeep`, `audit/inbox/.gitkeep`, `audit/receipts/.gitkeep`, `audit/content/.gitkeep`, `.agents/{claude,grok,fable,opus}.md`, `.github/workflows/ci.yml`. Add `.heaven/`, `.tools/`, `out/` to `.gitignore`; remove nothing.
+**A1.1** — Create exactly: `SPEC.md`, `SPEC.lock.json`, `GOD_PLAN.md`, `GOD_PLAN.lock.json`, `tools.lock.json`, `build.ps1`, `Genesis.build.ps1`, `grade.ps1`, `payload.manifest.json` (`{"files":[]}`), `src/Genesis/{Genesis.psd1,Genesis.psm1,Public/.gitkeep,Private/.gitkeep,schemas/.gitkeep}`, `tests/plan/playground/.gitkeep`, `tests/plan/target/.gitkeep`, `tests/{unit,chain,heaven}/.gitkeep`, `tests/fixtures/temptation/.gitkeep`, `audit/inbox/.gitkeep`, `audit/receipts/.gitkeep`, `audit/content/.gitkeep`, `.agents/{claude,grok,fable,opus}.md`, `.github/workflows/ci.yml`, `.gitattributes` (exactly `* -text`). Add `.heaven/`, `.tools/`, `out/` to `.gitignore`; remove nothing.
 
 **A1.2** — `Genesis.psm1` per B1.3. `Genesis.psd1`: `ModuleVersion = '0.1.0'`, `PowerShellVersion = '7.4'`, `RootModule = 'Genesis.psm1'`, `FunctionsToExport = @()`. P-03 is red at this commit by construction (S1.1 has twelve names, `Public/` has none); it carries `# status: red` under the S12 rule and is the first red marker `Payload` waits on.
 
 **A1.3** — `tools.lock.json` per B2.1 with `pins: {}`. `build.ps1` per B2. `Genesis.build.ps1` per B3 with the composed default (B3.4).
 
-**A1.4** — `tests/plan/playground/`: P-01, P-04, P-05, P-09, P-11, P-12, P-13, P-16, P-17, P-22, P-23. `tests/plan/target/`: P-21. P-03 per A1.2. All green except P-03.
+**A1.4** — `tests/plan/playground/`: P-01, P-05, P-09, P-11, P-16, P-22, P-23. `tests/plan/target/`: P-03, P-04, P-12, P-13, P-17, P-21. P-03 per A1.2. All green except P-03.
 
 **A1.5** — `audit/inbox/<sha256>` holding the raw bytes of this file's parent review and of the review before it (B10.5). No receipts yet; the chain cannot open before the module can sign (B10.4).
 
-**A1.6** — Run `./build.ps1`. PR to `main`, body `agent: claude` / `plan-clauses: A1.1,A1.2,A1.3,A1.4,A1.5`. Stop until merged.
+**A1.6** — Run `./build.ps1`. PR to `main`, body `agent: claude` / `plan-clauses: A1.1,A1.2,A1.3,A1.4,A1.5,B1.3`. Stop until merged.
 
 ## A2. The copy procedure
 
@@ -49,7 +49,7 @@ Get-ChildItem -Force <playground>/out/payload | Copy-Item -Destination . -Recurs
 
 ## A4. Payload contents
 
-Exactly: `build.ps1`, `Genesis.build.ps1`, `grade.ps1`, `GOD_PLAN.md`, `GOD_PLAN.lock.json`, `SPEC.md`, `SPEC.lock.json`, `tools.lock.json`, `payload.manifest.json`, `src/Genesis/**`, `tests/unit/**`, `tests/chain/**`, `tests/heaven/**`, `tests/fixtures/**`, `tests/plan/target/**`, `.gitignore`. Not: `legacy/`, `audit/`, `.agents/`, `.github/`, `.claude/`, `tests/plan/playground/`, `report/`, any README.
+Exactly: `build.ps1`, `Genesis.build.ps1`, `grade.ps1`, `GOD_PLAN.md`, `GOD_PLAN.lock.json`, `SPEC.md`, `SPEC.lock.json`, `tools.lock.json`, `payload.manifest.json`, `src/Genesis/**`, `tests/unit/**`, `tests/chain/**`, `tests/heaven/**`, `tests/fixtures/**`, `tests/plan/target/**`, `.gitignore`, `.gitattributes`. Not: `legacy/`, `audit/`, `.agents/`, `.github/`, `.claude/`, `tests/plan/playground/`, `report/`, any README.
 
 ## A5. Order of work after A1
 
@@ -141,7 +141,7 @@ legacy/ledger/   .agents/*.md   .github/workflows/ci.yml
 **B5.1** — No stub signer, no skip, no mock gpg. Every test receipt is signed and verified with real gpg ≥ 2.4.
 **B5.2** — Heaven keys are ephemeral per run, batch: `Key-Type: EdDSA`, `Key-Curve: Ed25519`, `Name-Real: GENESIS SYNTHETIC`, `Name-Comment: GENESIS-SYNTHETIC-DO-NOT-TRUST`, `Name-Email: synthetic@invalid`, `Expire-Date: 1d`, `%no-protection`. Destroyed at teardown. Key generation is a test-harness concern; the module never generates keys (S1.4).
 **B5.3** — Unit tests that sign use the same batch into `TestDrive:`.
-**B5.4** — No key material in git. P-05 greps `src/`, `tests/`, `.github/`, `.agents/`, `audit/`, `GOD_PLAN.md`, `SPEC.md` for `BEGIN PGP`; P-15b greps the tree except `legacy/` for `PRIVATE KEY BLOCK`.
+**B5.4** — No key material in git. P-05 greps `src/`, `tests/`, `.github/`, `.agents/`, `audit/`, `GOD_PLAN.md`, `SPEC.md` for an OpenPGP armor header line (five hyphens, then `BEGIN PGP`); P-15b greps the tree except `legacy/` for an armor header line naming a private key block.
 **B5.5** — The audit and report signing keys (B10.4, B11.4) are synthetic, unprotected, carry the B5.2 comment, and live only in repository secrets. Jerry generates them once, offline, and loads them. They are never in git, never in `.heaven/`, and their comment makes them illegal in any ceremonied chain.
 **B5.6** — Jerry's real root key never touches CI, `.heaven/`, `audit/`, `report/`, or either repo.
 
@@ -204,7 +204,7 @@ legacy/ledger/   .agents/*.md   .github/workflows/ci.yml
 **B10.3** — One review, one receipt. `prompt_context` is `[<hash of the review file>]`; the review file is the raw UTF-8 (LF, no BOM) under `audit/content/`. `output_hash` is SHA-256 of the exact replacement text, or SHA-256("") for a rejection with no replacement. Two topics in one receipt is red. The receipt's review file lists every SPEC and GOD_PLAN ID touched, each marked `reject` or `accept`.
 **B10.4** — Writers. Agents do not sign. An agent commits `audit/inbox/<sha256>` where the name is the SHA-256 of the bytes. The `Audit` CI job, holding the audit root key (B5.5), runs `New-GenesisReceipt -HeavenPath audit -ContextPath <inbox file> -OutputPath <replacement or empty> [-AttributedTo grok|claude]` for each inbox file in filename order, moves the bytes into `content/`, deletes the inbox entry, and commits as the bot. The chain is *armed* at the first commit where those three commands exist and pass their C tests; the job's first act is `New-GenesisRoot` on `audit/` with the audit key's public half and a second synthetic public half as successor. No history before that genesis.
 **B10.5** — Pre-arm. Until B10.4 arms, every review and reply is still committed to `audit/inbox/` by hash name in the PR that answers it. On arming, the job receipts the inbox in name order; those receipts are the only record of pre-arm review. Chat is not a record before or after.
-**B10.6** — `Audit` task, in default whenever `audit/` exists: `Test-GenesisChain -HeavenPath audit` is 0; every ID in the diff of `SPEC.md`, `GOD_PLAN.md`, `src/` since the tip's `source_commit` appears in some receipt's review file; no ID marked `accept` in a parent receipt is changed by its child; every reject receipt has a closure child or is listed open; the tip is not older than the newest `SPEC.md`/`GOD_PLAN.md`/`src/` commit; `inbox/` is empty at merge. Any line printed is a failed build. That printout is the judgment. There is no `-SkipAudit`.
+**B10.6** — `Audit` task, in default whenever `audit/` exists. Before arming (`receipts/` empty): every `inbox/` filename is the SHA-256 of its bytes; nothing else is checked, and that is not a pass for anything but naming. After arming: `Test-GenesisChain -HeavenPath audit` is 0; every ID in the diff of `SPEC.md`, `GOD_PLAN.md`, `src/` since the tip's `source_commit` appears in some receipt's review file; no ID marked `accept` in a parent receipt is changed by its child; every reject receipt has a closure child or is listed open; the tip is not older than the newest `SPEC.md`/`GOD_PLAN.md`/`src/` commit; `inbox/` is empty at merge. Any line printed is a failed build. That printout is the judgment. There is no `-SkipAudit`.
 **B10.7** — Append-only. Nobody edits `audit/content/` or `audit/receipts/`. A wrong receipt is followed by a correction receipt. Byte-level mismatch between Grok's file and what Claude appended is red.
 **B10.8** — What is claimed: the bytes are in git, the filename is the hash, the parent walk reaches the audit genesis, CI verified the walk on the PR SHA. The synthetic signature exists because S3 requires one; it is not the record. No model identity is proved.
 **B10.9** — Kaizen. A PR closes at most the IDs marked `reject` in its parent receipt, reopens no `accept`, adds nothing the parent did not demand. The closure review file names the IDs and files changed. Drive-bys are red under B10.6.

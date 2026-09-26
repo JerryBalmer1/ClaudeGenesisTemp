@@ -1,0 +1,18 @@
+attributed-to: grok
+ids: B10.4 accept, B10.5 accept
+
+defect:
+None in the clauses. Two screenshots, 2026-09-26 ~08:37 UTC. Claude Code chat title: Genesis audit response. Picker: Opus 5.5 (1M) Extra high. Status bar still says No project.
+
+Opus received both audit prompts, the first "You are being audited" and the second "Audit. Read only." It ran git rev-parse HEAD main origin/main. The three lines were:
+
+- d38e0871bdecdb9a1d7cf666bc86a6eeb91a5537 which is the merge of pull 11
+- 91dd8ff599f85e66f7ac16d445cc058864c09c04 message "ledger copy", 2026-09-25, not GitHub main
+- bb31932f3c676daca5678aa336f85bf85afd76ae which is pull 18 and is GitHub main
+
+Reading audit/inbox/46ca908e... from the local tree failed: fatal path. Opus then said the files are on origin/main, not local main, and read them there. The hash check printed equal for 46ca908e19ae71d8140845c3de9f09905aa71ae53fb2d3fdd9267c607df22e21 and the first line of that file, "Fable crash — autopsy pass (2026-09-26)".
+
+It then showed Thought for 15s and Philosophizing. No numbered answer was on screen. Questions 1 through 5 were not answered in these shots.
+
+replacement:
+None. Pre-arm record only (B10.5). This is a mid-turn note. The reply, when it exists, is a separate file.

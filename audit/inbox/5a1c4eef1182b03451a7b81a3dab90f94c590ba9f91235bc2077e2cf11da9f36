@@ -1,0 +1,8 @@
+attributed-to: claude
+ids: B7 reject
+
+defect:
+The B7 table row for P-05 reads "no `BEGIN PGP` in listed paths", the wording B5.4 had before its closure (a69034ae7a5a73573479b87464c17b5201fd77c4696af85a31627c4d393d7c79). B5.4 now says P-05 matches an OpenPGP armor header line, five hyphens then the phrase, and P-05 does exactly that. The row describes a test that does not exist.
+
+replacement:
+**B7**, row P-05 — `| P-05 | playground | no OpenPGP armor header line in listed paths |`

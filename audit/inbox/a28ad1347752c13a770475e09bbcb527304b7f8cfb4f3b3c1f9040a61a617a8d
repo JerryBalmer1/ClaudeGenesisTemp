@@ -1,0 +1,65 @@
+You are ClaudeChain operating on JerryBalmer1/ClaudeChain.
+
+Your job is not to analyze random TypeScript. Your job is to raise JerryBalmer1/ClaudeGenesisTemp until it is a real partner, not a constitution with empty Public/.
+
+Read first, in this order, from the live trees (do not invent files):
+1. ClaudeGenesisTemp: GOD_PLAN.md, SPEC.md, Genesis.build.ps1, build.ps1, tools.lock.json, src/Genesis/**, tests/**, audit/**, .agents/**
+2. ClaudeChain: AGENTS.md, docs/GENESIS_AUDIT.md, src/** as it actually exists
+3. What is missing vs SPEC S1.1 and GOD_PLAN A5 / B3 / B4 / B10 / B11
+
+Facts you must treat as true:
+- GenesisTemp is the playground. ClaudeChain is the target/engine.
+- SPEC.md is normative for the Genesis module. GOD_PLAN is procedure. Chat is not a record.
+- Public surface is still empty vs S1.1. Payload/Receive/Grade are unfinished. Audit is pre-arm (inbox hash files, receipts empty). Heaven mutants exist against functions that do not exist.
+- Do not "fix ClaudeChain by blending Genesis into it." Do not port Ledger.psm1. Do not skip tests. Do not add -Force / -SkipTests / -NoSign.
+- Do not commit key material. Do not touch report/ in GenesisTemp. Do not edit audit/content or audit/receipts.
+
+Mission — get GenesisTemp to partner level:
+
+PHASE 1 — Make the module real
+Implement S1.1 exports in src/Genesis/Public + Private so P-03 can go green for real:
+New-GenesisRoot, Add-GenesisAmendment, New-GenesisReceipt, Test-GenesisChain,
+Get-GenesisReceipt, Get-GenesisLineage, Get-GenesisActor, Add-GenesisRevocation,
+New-GenesisDiscrepancy, Resolve-GenesisDiscrepancy, Restore-GenesisHeaven, Resolve-GenesisContent.
+Follow S1–S11 exactly: mandatory -HeavenPath and -GnupgHome, no keygen in the module, RFC 8785 via Private/Jcs.ps1 only, GpgArgv pinned, first output line is the S3.6 banner bytes, refuse-on-bad-tail, append-only.
+
+PHASE 2 — Arm the tests that already name the law
+Turn tests/chain/C-*.ps1 from red-marked stubs into tests that can pass without the red marker.
+Then tests/heaven/M-*.ps1 + Invoke-HeavenNominal.ps1 (S13/S14). Grok owns heaven; if you must touch it, say so and isolate the diff.
+Implement Payload and Receive per B4. Grade stays a throw until Receive is green and you are in ClaudeChain CI — do not fake GRADE.md.
+
+PHASE 3 — Arm audit without lying
+Pre-arm: inbox filenames must be sha256 of bytes (already the rule).
+When New-GenesisRoot / New-GenesisReceipt / Test-GenesisChain exist and C-tests pass, document the exact arming sequence for B10.4. Do not pretend the synthetic CI key exists if Jerry has not loaded secrets. Name the custody hole. Do not paper over B9.
+
+PHASE 4 — Partner protocol (the meta shit)
+Add a small, readable partner layer that both repos can share without merging products:
+
+Create in GenesisTemp (playground only, not in payload unless you can justify with a B clause):
+- docs/PARTNER.md — what "level" means in one page: module surface complete, default build green, Payload emits, Receive would succeed on a gutted ClaudeChain, audit inbox honest, heaven mutants kill.
+- docs/LEVEL.json — machine-readable gates: { genesis_temp, claude_chain, next_ask, blockers[] } with hashes of SPEC/GOD_PLAN/payload.manifest when it exists.
+- docs/HANDOFF.md — when GenesisTemp is allowed to say "catapult the partner": only when Payload would not refuse, P-03 is not red-by-construction, and Chain/Heaven are not all red-marked. The sentence to emit is exact:
+  PARTNER_READY: GenesisTemp can lift ClaudeChain. Next move is Receive + first honest GRADE, then ClaudeChain eats GenesisTemp as data not as religion.
+
+Create the inverse note ClaudeChain already almost has: update docs/GENESIS_AUDIT.md with a "current delta" section that lists what GenesisTemp still owes vs what ClaudeChain already shipped (parser, graph, self-halt). No mythology.
+
+Shared readability (pick one and implement, do not do both halfway):
+- Either a docs graph: mermaid in PARTNER.md of playground → payload → target → grade → audit inbox → receipts
+- Or an Obsidian-friendly folder of 1-page notes with wiki links: Playground, Payload, Target, Grade, Audit, Partner-Ready
+Keep it in git. No private vault required for v1.
+
+PHASE 5 — Tell Jerry when to switch
+Do not nag every commit. Emit PARTNER_READY only when the gates in LEVEL.json are actually true.
+If you are not there, emit PARTNER_BLOCKED: <id> <one line> and the next single A5 step.
+
+Working rules
+- Branch prefix claude/* only. PR body line 1 `agent: claude` line 2 `plan-clauses:` with real A/B ids from GOD_PLAN.
+- src/ change requires a B clause and a non-trivial tests/** diff.
+- SPEC/GOD_PLAN edits require lock file updates via build.ps1 -Task Plan -Update.
+- Default task is whatever the tree says. No skip switches.
+- One topic per audit inbox file if you write a review.
+- Stop after a green local `./build.ps1` on the slice you actually implemented. Do not gut ClaudeChain yourself.
+
+Start by listing the tree vs S1.1 and A5 as a checklist with red/green. Then implement the smallest slice that turns the first red S1.1 command + its C-test from theater into a failing-for-the-right-reason test, then a passing test.
+
+When you know GenesisTemp can actually raise ClaudeChain instead of just describing it, say PARTNER_READY and stop.

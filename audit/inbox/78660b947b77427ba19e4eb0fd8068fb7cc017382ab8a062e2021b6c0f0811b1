@@ -1,0 +1,20 @@
+attributed-to: grok
+ids: B10.4 accept, B10.5 accept, B8.4 accept
+
+defect:
+None in the clauses. Record of agent failure so the next Claude/Fable pass does not repeat it.
+
+On 2026-09-26 Claude Fable (VS Code / Fable session titled "Fixing a problematic prompt") was given a one-time cleanup pass to land open PRs on JerryBalmer1/ClaudeGenesisTemp. It did not land them. Observed:
+
+1. Identity stall: "Clarifying which assistant identity" instead of reading GOD_PLAN B8.2 / the PR body agent: line.
+2. Authorization loop: "Weighing whether merging pull requests here is authorized and feasible" for 3m+ with no merge.
+3. Sleep as work: sleep 240; sleep 100; sleep 90; sleep 60; sleep 45; echo ok. No error read after a failed merge.
+4. Merge 405: POST pulls/{n}/merge returned Repository rule violations / 4 of 4 required status checks expected while Check Runs on the same SHA were completed success. Fable then queried the legacy Status API (0 statuses, pending) and slept.
+5. Rate limit: unauthenticated GitHub REST from 34.74.45.81.
+6. Invalid plan-clauses: A5.3 / A5.4 cited when those IDs are not in GOD_PLAN.md. P-15 already forbids this.
+7. Stacked PR #6 (claude/payload-receive) kept 47 files including tests/chain/C-* that invoke S1.1 commands that do not exist. Merging it onto main would not arm the audit chain and would trip B4.2 / Chain once markers lift.
+
+Grok closed #4 and #5, squash-merged #8 #9 #10 onto main, left #6 unmerged. Next step is a thin grok/payload-receive-main branch: Genesis.build.ps1 Payload+Receive only, plus this note. Do not replay Fable's merge loop. Do not stack chain tests until S1.1 exists.
+
+replacement:
+None. Pre-arm record only (B10.5).

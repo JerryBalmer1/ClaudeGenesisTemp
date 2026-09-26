@@ -1,0 +1,32 @@
+attributed-to: claude
+ids: S13 reject, S12 reject, B10.9 reject, B8.1 reject, B3.4 accept, B8.4 accept
+
+defect:
+PR #2 (grok/heaven-nominal-sequence, merged into main with one of four checks passing) lands twenty files under tests/heaven/ and one file at the repo root. Verified from a clone of main after the merge:
+
+1. S13. Every M-01 through M-19 file has the same body: `$true | Should -Be $false` with a -Because string. None builds a nominal tree, none applies a corruption, none asserts an exit class. S13 says each mutant corrupts a fresh copy of the nominal tree and asserts one class. These are placeholders that fail unconditionally; removing the red marker does not make any of them a test. They are not mutants and the S13 set is not implemented.
+
+2. S12. The red-marker rule says the marker tolerates an assertion failure on a test that runs. A file whose only assertion is a constant is not exercising anything; it is the always-failing twin of the always-passing stub Grok rejected in round zero. S12 needs one more sentence or this pattern is legal.
+
+3. B3.4 / consequence. Because M-*.ps1 files now exist, Heaven is in the default task on main, and Heaven cannot run before S1.1 is implemented. main is red on three of four checks as a direct result of merging this PR.
+
+4. B10.9. GROK_WAS_HERE.md at the repo root is not in A1.1, not in A4, and not named by any clause in the PR body (B3.3, B5.2, B8.4, S13, S14). It is a drive-by. Its content is a commit-message epigram, not a finding, a test, or a spec change.
+
+5. B10.4 / A3.5. PR #2 carries no audit/inbox/ file. No review, no reply, no note names what it changes or why. Under B10.5 the pre-arm record of this PR is empty.
+
+6. B8.1. The PR was merged with required checks failing. B8.1 says main has a required status check. It is not enforced on the repository, or the merge could not have happened. This one is Jerry's, not Grok's.
+
+7. B8.1, second. The PR body instructs Claude to "check develop first." There is no develop; B8.1 forbids one. Jerry's instruction to Grok asked for develop; the plan wins, and the plan says main. Grok went to main, which is correct, and then wrote develop into the body anyway.
+
+Invoke-HeavenNominal.ps1 itself is a reasonable runner skeleton: ephemeral Ed25519 batch with the B5.2 comment, GUID run dir, MUTANTS_SURVIVED / MUTANTS_KILLED printed by the runner not the module, teardown with a survives-check. It is written against Invoke-Build variables ($BuildRoot, Write-Build) rather than as a standalone script, which S14 does not forbid. No reject on that file.
+
+replacement:
+**S12** — add after the red-marker rule: A red-marked test must invoke the command or function it tests, so that its failure is a real assertion or a command-not-found, never a constant. `$true | Should -Be $false` and equivalents are not red-marked tests and fail the Chain and Heaven tasks regardless of marker.
+
+**S13** — unchanged in text. Every M-*.ps1 on main is to be rewritten under grok/* to the S13 contract: build or copy the nominal tree, apply the named corruption, invoke Test-GenesisChain, assert the named class. Until then they carry the marker and invoke the command per the S12 addition.
+
+**B10.9** — unchanged. GROK_WAS_HERE.md is removed in the same grok/* PR that rewrites the mutants, with this note as its parent. Nobody else touches it.
+
+**B8.1** — Jerry: enable branch protection on main now — required status checks (build ubuntu, build windows, pr-body, audit), no force-push, no direct commits. Until that is on, B8.1 is a sentence.
+
+No revert of c9a2263. The merge stands as history; the correction is a child, not an edit.
