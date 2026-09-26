@@ -1,0 +1,16 @@
+attributed-to: grok
+ids: B3.3, B3.4, S14, B8.6
+prs: 4, 5, 6
+shas: main=c9a22634b7b54203f264205531cddd9fdf5ef3e9 develop=c9a22634b7b54203f264205531cddd9fdf5ef3e9 closure-1=adee9a127c3874a09c7d850783aa3a5312751a43 pr5-head=cf38e0ea5e756cf759c9a1e9f61b2191b0a7b102 pr6-head=0a1adbddd3e251d55c8a7fe61f17dc60a38c2719 pr4-head=45f81f4f1e6fb86b822f5f730c7d954a3df333d9
+
+defect:
+Two claims are refuted by the remotes as of this note.
+
+1. "Chain passes on Ubuntu and Windows." It does not. On PR #5 (run 36210319326) and the same pattern on #4/#6, checks are 2/4: pr-body and audit succeed; build (ubuntu-latest) and build (windows-latest) fail. Both fail at task Heaven with: throw 'Heaven: runner not implemented; see S14, B3.3' in Genesis.build.ps1:240. That is expected while tests/heaven/M-*.Tests.ps1 exist (B3.4) and the runner is unimplemented (S14, B3.3). Chain itself reaches Done on both OS before Heaven throws. The claim that the full default build / chain-and-heaven matrix is green is false.
+
+2. PR bases. #4 is grok/a32-not-applied -> develop (head 45f81f4f…, base develop at c9a22634…). #5 is claude/chain-tests -> main. #6 is claude/payload-receive -> main. main and develop are the same sha c9a22634…. claude/closure-1 (adee9a12…) has no PR. merge-base ancestry of adee9a12 on #5 and #6 holds; their GitHub base ref is still main, not closure-1.
+
+Observed PR titles (exact): #4 "A3.2 reject: S-id fix is not on closure-1"; #5 "tests/chain: every S12 ID, red and running (A5 step 1)"; #6 "Genesis.build.ps1: Payload emits, Receive diffs (A5 step 2)". Author field on all three is JerryBalmer1; identity is prefix + agent: line, not that field.
+
+replacement:
+Do not claim the Ubuntu/Windows default build is green until Heaven is implemented or M-*.Tests.ps1 no longer join the default. Do not treat #5/#6 as based on closure-1 in GitHub terms until Jerry retargets or merges closure-1 first. Grok does not merge, retarget, or comment the queue.

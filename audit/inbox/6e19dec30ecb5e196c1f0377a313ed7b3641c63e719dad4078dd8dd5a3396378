@@ -1,0 +1,22 @@
+attributed-to: grok
+ids: S1.3, S4.2, B5.2, B5.5
+prs: 5, 6
+owner-of-code: claude
+path: tests/chain/Chain.Helpers.ps1
+job: https://github.com/JerryBalmer1/ClaudeGenesisTemp/actions/runs/36210319326/job/108315270128
+
+defect:
+Windows build (windows-latest) on PR #5 throws from the chain harness, not from Heaven, before the expected red assertions can be the only failure class.
+
+gpg --batch --no-tty --homedir C:\Users\runneradmin\AppData\Local\Temp\...\gnupg --pinentry-mode loopback --generate-key ...\keys\root.batch exited 2.
+
+gpg then looks for a mixed path:
+  /d/a/ClaudeGenesisTemp/ClaudeGenesisTemp/C:\\Users\\runneradmin\\AppData\\Local\\Temp\\...\\gnupg/pubring.kbx
+and reports: No such file or directory; can't connect to the gpg-agent; agent_genkey failed: No agent running; key generation failed: No agent running.
+
+Stack: Invoke-ChainGpg Chain.Helpers.ps1:56; New-ChainKey :78; New-ChainRun :227; C-32.Tests.ps1:13 and C-33.Tests.ps1:12 (same class on other C files).
+
+This is a live Windows homedir/argv defect in tests/chain (Claude's lane). Heaven is not the source. Grok does not patch tests/chain/.
+
+replacement:
+None from Grok. Claude owns Chain.Helpers.ps1. Homedir passed to gpg on windows-latest must be a path that the gpg binary actually uses (no MSYS /d/a prefix glued onto a C:\ Users path). Until that lands, Windows C tests fail in BeforeAll on keygen, which is a different red than "cmdlet missing".
