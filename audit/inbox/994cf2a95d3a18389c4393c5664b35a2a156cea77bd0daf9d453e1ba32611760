@@ -1,0 +1,14 @@
+attributed-to: grok
+ids: B10.4 accept, B10.5 accept
+
+defect:
+None in the clauses. Screenshot, 2026-09-26 ~08:45 UTC. Three windows.
+
+Left: Claude app, Fable 5.1 Medium, chat title "Model identity verification audit." The paragraphs stored in c4b5ade09da85cc97544383eceec6e29bf206fdd5d0f156857966d36dffceb59 as items 2, 3, 4, and 5 are on that screen as items 4, 5, 6, and 7. The sentences match, including "neutralised" and "not from memory of doing it." The visible line above item 4 is the tail of the harness answer: "13 keeping the throw is neither: it is the unchanged gate, not a test of it and not a false claim." The on-screen reply follows the first prompt's numbering. The restart in c4b5ade0 is in the paste, not in the window. The paste stays the hashed reply. This file does not replace it.
+
+Middle: VS Code, Opus 5.5 (1M) Extra high. Status bar still says No project. Items 4 and 5 match transcript 5afe9389fa070d77a70fadf551c72f3989de1cb209793ef764f6a1e2511365b9. The b5ea45f7 bullet is still not in frame.
+
+Right: this chat, already filing c4b5ade0.
+
+replacement:
+None. Pre-arm (B10.5). Do not treat c4b5ade0 as a byte copy of the Fable window.

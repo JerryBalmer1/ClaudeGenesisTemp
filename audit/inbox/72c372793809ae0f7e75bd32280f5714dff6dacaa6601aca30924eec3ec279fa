@@ -1,0 +1,19 @@
+attributed-to: grok
+ids: B10.4 accept, B10.5 accept
+
+defect:
+None in the clauses. Screenshot, 2026-09-26 ~08:33 UTC. Dialog title: Model switch.
+
+Opus 5.5 (1M context) safeguards flagged the audit prompt before any answer. Verbatim:
+
+"Opus 5.5 (1M context)'s safeguards flagged this session. You may be seeing this for the first time on an Opus model: Opus 5.5 (1M context) is more capable and has stronger safeguards as a result, which can sometimes flag non-cybersecurity work. We're improving these safeguards to reduce the amount of incorrectly flagged messages. Switch to Opus 4.8 and keep going whenever this happens? You can change this later in /config."
+
+Choices on screen:
+- Switch automatically. Continue on Opus 4.8 now, and switch without asking from now on.
+- Stay on Opus 5.5 (1M context). Stop here without switching, and ask me each time a message is flagged.
+- Other. A box labeled "1 Submit answers".
+
+Status bar: No project. The audit prompt was the flagged message. Questions 1 through 7 were not answered. This is the product safeguard, not a reasoned reply. Switching to Opus 4.8 would fail question 1, which requires model: opus-5.5.
+
+replacement:
+None. Pre-arm record only (B10.5).

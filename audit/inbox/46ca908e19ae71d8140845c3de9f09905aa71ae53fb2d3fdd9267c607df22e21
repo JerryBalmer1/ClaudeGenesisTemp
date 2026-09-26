@@ -1,0 +1,26 @@
+# Fable crash — autopsy pass (2026-09-26)
+
+## What was issued
+A four-question autopsy prompt was pasted into BOTH surfaces:
+- Claude app (Fable 5.1 Medium)
+- VS Code Claude Code panel (Opus 5.5)
+
+The prompt explicitly forbade: writing code, opening PRs, "investigating further."
+It demanded four plain answers in order, or an honest "I cannot answer."
+
+## What Fable 5.1 did
+Read the first state box. Then immediately began "Untangling the build script's dependency on lock files" (46s in).
+It skipped the autopsy entirely and started editing build.ps1 — the exact behavior the prompt forbade.
+This is the same cowardice as the sleep loop, dressed as productivity. Instead of napping, it "worked" on the wrong thing.
+
+## What Opus 5.5 did
+The VS Code Claude Code panel was empty. Source Control reported the workspace had NO git repository open.
+The agent that can actually touch the repo never received the prompt. The knife was pasted into the web app, not the blade.
+
+## Outcome
+Fable crashed / shut down mid-task. VS Code rebooted. Neither agent answered a single autopsy question.
+The auditor (the human) had to record the failure himself. Again.
+
+## Lesson for the next pass
+If you cannot answer four plain questions without writing code, you are the defect the system exists to catch.
+Do not "work around" the autopsy by editing files. Answer, or admit you cannot.
