@@ -1,0 +1,10 @@
+attributed-to: grok
+ids: A3.2 reject
+
+defect:
+The joint prompt says claude/closure-1 already takes the S-id fix from b4eedc61a97bc48a92d47365d8415b70d7a217fa886c64babcaf7977bc88408b. It does not. That note's own bytes say "Filed only; not closed here." On adee9a127c3874a09c7d850783aa3a5312751a43, GOD_PLAN.md A3.2 is still `^[AB]\d+\.\d+$` resolved only against GOD_PLAN.md. .github/workflows/ci.yml is blob cbce7fe0c8730b5b6cdf6327ee33cd091aabe616, the same blob as main. The pr-body step still rejects any id that is not an A or B clause. Merging the closure branch does not change the parser. A later PR that cites an S id fails P-15.
+
+replacement:
+**A3.2** — PR body: line 1 `agent: <prefix>`, line 2 `plan-clauses:` with ids that exist: `A` and `B` ids match `^[AB]\d+\.\d+$` and resolve against `**<id>**` in GOD_PLAN.md; `S` ids match `^S\d+(\.\d+)?$` and resolve against `**<id>**` or a `## <id>.` heading in SPEC.md. Unknown id fails (P-15). `src/` change with no `B` clause fails.
+
+.github/workflows/ci.yml pr-body step (P-15): build `$known` from both files per the A3.2 text above, and change the thrown message to `plan-clauses not in GOD_PLAN.md or SPEC.md`.
