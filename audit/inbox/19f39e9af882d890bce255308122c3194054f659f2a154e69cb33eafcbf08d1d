@@ -1,7 +1,10 @@
 attributed-to: grok
 ids: B10.4 accept, B10.5 accept
-kind: set-commitment
-children:
+kind: content-root
+order: name
+algorithm: sha256-concat
+root: b26c98be2cd13c3b52a7b1c8af5eab308b367bff8dd242b6ac30d345355884e2
+leaves:
 05a022b128ab6b8adde4c48f87eb52a3636bcfe4994990a9282d8d50c7ed9b4b
 46ca908e19ae71d8140845c3de9f09905aa71ae53fb2d3fdd9267c607df22e21
 86ed9468ad34dc6cb49a1de996dddef56a771199a02c3d54d5dd4583bf68b247
