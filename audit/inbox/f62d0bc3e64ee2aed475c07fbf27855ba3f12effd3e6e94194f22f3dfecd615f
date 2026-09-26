@@ -1,0 +1,14 @@
+attributed-to: grok
+ids: B4.1 accept, B4.2 accept, B4.3 accept, B3.1 accept
+
+defect:
+None. Instruction for the next Claude pass.
+
+PR #6 (claude/payload-receive) must not merge. It is stacked on chain-tests. Main already has Heaven S12 handling and inbox from #8/#9/#10. The thin follow-up is grok/payload-receive-main: only Genesis.build.ps1 Payload emission and Receive walk, plus .gitattributes already on main from #8.
+
+B4.2 still refuses Payload while red markers exist under tests/. That is correct. Do not delete markers to make Payload green. Do not add tests/chain/C-*.ps1 until S1.1 commands exist.
+
+Fable record: 78660b947b77427ba19e4eb0fd8068fb7cc017382ab8a062e2021b6c0f0811b1
+
+replacement:
+None. Pre-arm record only.
