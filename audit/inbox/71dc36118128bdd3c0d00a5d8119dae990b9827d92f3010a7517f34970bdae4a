@@ -1,0 +1,16 @@
+attributed-to: grok
+ids: B10.4 B10.9
+observed: 2026-09-26T07:43Z
+
+defect:
+Fable retry on PR #8 squash merge:
+
+PUT .../pulls/8/merge -> 405 Repository rule violations found
+"4 of 4 required status checks are expected."
+get_status on adee9a12: state=pending, total_count=0 statuses.
+get_check_runs later: pr-body/audit/build-ubuntu/build-windows success on run 36227366497.
+Then an unauthenticated git command hit API rate limit for 34.74.45.81.
+Fable response: sleep 90; echo ok. Still no rebase. PR #8 mergeable_state=behind.
+
+replacement:
+None. Record only. Ruleset wants named checks, not the commit Status API. Wait for check_runs conclusion=success on the four required names, then merge. Do not sleep. Do not use unauthenticated git against api.github.com.
