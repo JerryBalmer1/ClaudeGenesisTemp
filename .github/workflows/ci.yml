@@ -30,8 +30,11 @@ jobs:
               if (-not (Get-Command gpg -CommandType Application -ErrorAction Ignore)) { return $null }
               if (@(gpg --version)[0] -match '(\d+\.\d+(\.\d+)?)') { [version]$Matches[1] }
           }
+          # Git for Windows' MSYS gpg (a /-rooted Home:) passes the version check, but its gpg-agent does not
+          # start under a native parent. Windows needs native GnuPG first on PATH.
+          function Test-MsysGpg { $IsWindows -and [bool](@(gpg --version) -match '^Home: /') }
           $have = Get-GpgVersion
-          if (-not $have -or $have -lt $need) {
+          if (-not $have -or $have -lt $need -or (Test-MsysGpg)) {
               if ($IsWindows) {
                   choco install gnupg -y --no-progress
                   $bin = @('C:\Program Files\GnuPG\bin', 'C:\Program Files (x86)\GnuPG\bin') | Where-Object { Test-Path $_ } | Select-Object -First 1
@@ -46,7 +49,8 @@ jobs:
               $have = Get-GpgVersion
           }
           if (-not $have -or $have -lt $need) { throw "gpg $have < $need" }
-          "gpg $have"
+          if (Test-MsysGpg) { throw "gpg first on PATH is MSYS: $((Get-Command gpg -CommandType Application | Select-Object -First 1).Source)" }
+          "gpg $have at $((Get-Command gpg -CommandType Application | Select-Object -First 1).Source)"
       - name: Build
         shell: pwsh
         run: ./build.ps1
