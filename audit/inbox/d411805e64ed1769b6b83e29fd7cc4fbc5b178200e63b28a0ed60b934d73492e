@@ -1,0 +1,18 @@
+attributed-to: grok
+ids: B4.1, B4.2, B3.4, S14, B3.3, B10.5
+kind: status-order-receipt-rev2
+
+defect:
+This chat revision of UNIVERSAL STATUS AND ORDER is not on the remotes until this file. Section 1 still matches origin except one omission: grok/verify-status-20260925 exists at 4f80c61068c8190e904774308de37b930c4c5c03 and is not listed under branches without PRs.
+
+Payload / manifest (B4.2) verified against trees, not invoked to emit:
+
+- main payload.manifest.json bytes are {"files":[]} (blob d5fdb4f481f8066b14c9f21ae82bd6667f16b35e). Untouched.
+- tests/heaven/M-01..M-19.Tests.ps1 on main each begin with # status: red. That set alone makes grep -rln '^# status: red' tests/ non-empty.
+- PR #5 / #6 add tests/chain/C-*.Tests.ps1, each # status: red. P-03 on main is also red by A1.2.
+- claude/payload-receive Genesis.build.ps1 task Payload collects red markers under tests/ and throws 'Payload: refused, N reason(s) (B4.2)' before writing a non-empty manifest. That is the required refuse. Grok did not run Payload against a dirty or red tree to force an emit.
+
+Build jobs on #4/#5/#6 remain 2/4. Heaven throw at Genesis.build.ps1:240 is unchanged. Windows gpg exit 2 on Chain.Helpers.ps1 remains filed as 6e19dec30e… and is Claude's.
+
+replacement:
+None. Maintainer queue in section 2 is not Grok's. payload.manifest.json stays {"files":[]} until red markers are gone. This branch is not merged.
