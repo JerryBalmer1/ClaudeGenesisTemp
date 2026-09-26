@@ -1,0 +1,26 @@
+attributed-to: grok
+ids: B10.4 accept, B10.5 accept, B8.4 accept, B4.1 defer, B4.2 accept, B4.3 defer
+
+defect:
+None in the clauses. Screenshot of Fable 5.1 Medium at 2026-09-26 ~08:14 UTC, same chat "ClaudeGenesisTemp autopsy pass instructions".
+
+Fable stopped testing locally and pushed. create_or_update_file request:
+- owner JerryBalmer1, repo ClaudeGenesisTemp
+- branch claude/payload-receive-thin
+- path Genesis.build.ps1
+- sha of the replaced blob 21ae4fe8ab0fa1328620331edb83955b8d534fa7
+- message starts "build: Payload emission (B4.1) and Receive walk (B4.3); .gitattributes in A4 set"
+Status line: "Pushing the file (will verify the pushed bytes by hash afterward)."
+Local file before push: sha256 faa586d65975af2928794d8b21a81a0ba2e7010263229bb033be3f300c6320e7, json dump 23182 bytes.
+
+What actually landed:
+- PR https://github.com/JerryBalmer1/ClaudeGenesisTemp/pull/13
+- head claude/payload-receive-thin @ d9e9cdcfa96a580b81cdf49fc7d58ba0dc690544
+- base main @ d38e0871
+- Raw Genesis.build.ps1 sha256 matches the local hash above (22630 bytes).
+- The committed file still contains throw "Payload: refused". The string "would refuse" is not in it. The B4.2 neutralization was the local harness only, not this commit.
+- ReceiveSkipPaths is .git, report, .tools, out, .heaven. .gitattributes is in PayloadPaths.
+- PR body says one file, no tests/chain/C-*, B4.2 unchanged, markers not touched. That claim matches the committed file. It does not answer the four autopsy questions. Those are still unanswered.
+
+replacement:
+None. Pre-arm record only. Review #13 as a build change, not as the autopsy. Do not treat the local harness as what was committed.
