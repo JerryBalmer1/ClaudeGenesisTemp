@@ -91,9 +91,20 @@ jobs:
           if ($lines[0].Trim() -cne "agent: $prefix") { throw "line 1 must be 'agent: $prefix', got '$($lines[0].Trim())' (B8.2)" }
           if ($lines[1].Trim() -notmatch '^plan-clauses:\s*(\S.*)$') { throw 'line 2 must be plan-clauses: <ids> (A3.2)' }
           $ids = @($Matches[1] -split '\s*,\s*' | Where-Object { $_ })
-          $known = @([regex]::Matches((Get-Content -Raw GOD_PLAN.md), '\*\*([AB]\d+\.\d+)\*\*') | ForEach-Object { $_.Groups[1].Value })
-          $unknown = @($ids | Where-Object { $_ -cnotmatch '^[AB]\d+\.\d+$' -or $_ -cnotin $known })
-          if ($unknown) { throw "plan-clauses not in GOD_PLAN.md: $($unknown -join ', ') (P-15)" }
+          $gp = Get-Content -Raw GOD_PLAN.md
+          $sp = Get-Content -Raw SPEC.md
+          $known = @()
+          $known += [regex]::Matches($gp, '\*\*([AB]\d+\.\d+)\*\*') | ForEach-Object { $_.Groups[1].Value }
+          $known += [regex]::Matches($sp, '\*\*([Ss]\d+(?:\.\d+)?)\*\*') | ForEach-Object { $_.Groups[1].Value }
+          $known += [regex]::Matches($sp, '(?m)^##\s+([Ss]\d+(?:\.\d+)?)\b') | ForEach-Object { $_.Groups[1].Value }
+          $known = @($known | Select-Object -Unique)
+          $unknown = @($ids | Where-Object {
+              $id = $_
+              if ($id -cmatch '^[AB]\d+\.\d+$') { return ($id -cnotin $known) }
+              if ($id -cmatch '^S\d+(\.\d+)?$') { return ($id -cnotin $known) }
+              return $true
+          })
+          if ($unknown) { throw "plan-clauses not in GOD_PLAN.md or SPEC.md: $($unknown -join ', ') (P-15)" }
           $changed = @(git diff --name-only "$env:BASE_SHA...$env:HEAD_SHA")
           if (($changed | Where-Object { $_ -like 'src/*' }) -and -not ($ids | Where-Object { $_ -clike 'B*' })) {
               throw 'src/ changed with no B clause in plan-clauses (A3.2)'
