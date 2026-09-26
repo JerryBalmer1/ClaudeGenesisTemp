@@ -233,11 +233,14 @@ task Chain {
 # Synopsis: S14 nominal sequence plus every S13 mutant, one run per invocation (B3.3).
 task Heaven {
     $dir = Join-Path $BuildRoot 'tests/heaven'
+    $nominal = Join-Path $dir 'Invoke-HeavenNominal.ps1'
+    $files = @(Get-ChildItem -Path $dir -Filter 'M-*.ps1' -File -ErrorAction Ignore | Sort-Object Name)
     $missing = @()
-    if (-not (Test-Path -LiteralPath (Join-Path $dir 'Invoke-HeavenNominal.ps1'))) { $missing += 'tests/heaven/Invoke-HeavenNominal.ps1' }
-    if (-not (Get-ChildItem -Path $dir -Filter 'M-*.ps1' -File -ErrorAction Ignore)) { $missing += 'tests/heaven/M-*.ps1' }
+    if (-not (Test-Path -LiteralPath $nominal)) { $missing += 'tests/heaven/Invoke-HeavenNominal.ps1' }
+    if (-not $files) { $missing += 'tests/heaven/M-*.ps1' }
     if ($missing) { throw "Heaven: missing input $($missing -join ', ') (S13, S14)" }
-    throw 'Heaven: runner not implemented; see S14, B3.3'
+    & $nominal
+    Invoke-GenesisPester -Label Heaven -File $files
 }
 
 # Synopsis: stage out/Genesis/<ver>/ from src/ only; a foreign file is red (B3.2).
