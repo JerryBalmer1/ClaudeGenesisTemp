@@ -1,7 +1,6 @@
-# status: red
 # clause: B4.3
 # P-21: Receive reports every extra, missing, and mismatched file together, ignores .git/ and report/,
-# and writes nothing. Red until Receive exists.
+# and writes nothing.
 
 BeforeAll {
     $root = (Resolve-Path (Join-Path $PSScriptRoot '../../..')).Path

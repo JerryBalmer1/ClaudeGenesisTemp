@@ -24,8 +24,11 @@ $PayloadPaths = @(
     'GOD_PLAN.md', 'GOD_PLAN.lock.json', 'SPEC.md', 'SPEC.lock.json',
     'tools.lock.json', 'payload.manifest.json',
     'src/Genesis', 'tests/unit', 'tests/chain', 'tests/heaven', 'tests/fixtures', 'tests/plan/target',
-    '.gitignore'
+    '.gitignore', '.gitattributes'
 )
+# B4.3. Receive does not diff these: git, the target's grade, and the gitignored folders build.ps1 and the
+# default task create in the target itself.
+$ReceiveIgnored = @('.git', 'report', '.tools', 'out', '.heaven')
 # B3.1. Liftable set = A4 minus these.
 $LiftPaths = @($PayloadPaths | Where-Object { $_ -notin 'payload.manifest.json', 'grade.ps1', 'tests/plan/target' })
 
@@ -310,12 +313,65 @@ task Payload {
         throw "Payload: refused, $($refusals.Count) reason(s) (B4.2)"
     }
     Invoke-Build -Task . -File $BuildFile
-    throw 'Payload: emission not implemented; see B4.1'
+
+    # A4 exactly, as tracked at HEAD; the tree is clean, so these bytes are HEAD's. The committed
+    # payload.manifest.json is replaced by the one emitted here.
+    $dest = Join-Path $BuildRoot 'out/payload'
+    if (Test-Path -LiteralPath $dest) { Remove-Item -LiteralPath $dest -Recurse -Force }
+    $tracked = @((git -C $BuildRoot ls-files -z -- @PayloadPaths) -split "`0" | Where-Object { $_ -and $_ -ne 'payload.manifest.json' })
+    $entries = [Collections.Generic.List[object]]::new()
+    foreach ($rel in $tracked) {
+        $target = Join-Path $dest $rel
+        $null = New-Item -ItemType Directory -Path (Split-Path -Parent $target) -Force
+        Copy-Item -LiteralPath (Join-Path $BuildRoot $rel) -Destination $target
+        $entries.Add([ordered]@{ path = $rel; sha256 = (Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash.ToLowerInvariant() })
+    }
+    $entries.Add([ordered]@{ path = 'payload.manifest.json'; sha256 = '' })
+    $sorted = $entries.ToArray()
+    [Array]::Sort([string[]]@($sorted | ForEach-Object { $_.path }), $sorted, [StringComparer]::Ordinal)
+
+    $manifest = [ordered]@{
+        genesis_version = (Import-PowerShellDataFile -Path $Manifest).ModuleVersion
+        source_commit   = (git -C $BuildRoot rev-parse HEAD)
+        files           = $sorted
+    }
+    $bytes = [Text.UTF8Encoding]::new($false).GetBytes(((ConvertTo-Json -InputObject $manifest -Depth 4) -replace "`r`n", "`n") + "`n")
+    [IO.File]::WriteAllBytes((Join-Path $dest 'payload.manifest.json'), $bytes)
+    [IO.File]::WriteAllBytes((Join-Path $BuildRoot 'out/payload.manifest.json'), $bytes)
+    Write-Build Green "Payload: out/payload/, $($sorted.Count) files, source_commit $($manifest.source_commit)"
 }
 
 # Synopsis: target only. Diff the tree against payload.manifest.json, then run the default (B4.3).
 task Receive {
-    throw 'Receive: not implemented; see B4.3'
+    $manifestPath = Join-Path $BuildRoot 'payload.manifest.json'
+    if (-not (Test-Path -LiteralPath $manifestPath -PathType Leaf)) { throw 'Receive: missing input payload.manifest.json' }
+    $expected = [Collections.Generic.Dictionary[string, string]]::new([StringComparer]::Ordinal)
+    foreach ($f in (Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json -AsHashtable).files) { $expected[$f.path] = $f.sha256 }
+
+    $actual = [Collections.Generic.Dictionary[string, string]]::new([StringComparer]::Ordinal)
+    foreach ($file in Get-ChildItem -LiteralPath $BuildRoot -Recurse -File -Force) {
+        $rel = Get-GenesisRelativePath $file.FullName
+        if (($rel -split '/')[0] -in $ReceiveIgnored) { continue }
+        $actual[$rel] = $file.FullName
+    }
+
+    # Every difference is reported before anything fails; nothing is written (P-21).
+    $lines = [Collections.Generic.List[string]]::new()
+    foreach ($rel in @($expected.Keys) | Sort-Object -CaseSensitive) {
+        if (-not $actual.ContainsKey($rel)) { $lines.Add("missing $rel"); continue }
+        if ($expected[$rel] -eq '') { continue }
+        $hash = (Get-FileHash -LiteralPath $actual[$rel] -Algorithm SHA256).Hash.ToLowerInvariant()
+        if ($hash -ne $expected[$rel]) { $lines.Add("mismatch $rel sha256=$hash manifest=$($expected[$rel])") }
+    }
+    foreach ($rel in @($actual.Keys) | Sort-Object -CaseSensitive) {
+        if (-not $expected.ContainsKey($rel)) { $lines.Add("extra $rel") }
+    }
+    if ($lines.Count) {
+        $lines | ForEach-Object { Write-Build Red "Receive: $_" }
+        throw "Receive: $($lines.Count) file(s) differ from payload.manifest.json (B4.3)"
+    }
+    Write-Build Green "Receive: $($expected.Count) files match payload.manifest.json"
+    Invoke-Build -Task . -File $BuildFile
 }
 
 # Synopsis: ClaudeChain CI only. Runs grade.ps1 (B11.3).
