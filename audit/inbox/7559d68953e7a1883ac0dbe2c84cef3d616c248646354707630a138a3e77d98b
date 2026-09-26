@@ -1,0 +1,19 @@
+B8.1 reject.
+
+B8.1 says "required status check" and never names the checks, never says strict, never names the bypass list.
+
+Replacement. main is governed by repository ruleset id 24026011 named main-protect. SHA-256 of the compact JSON GET of that ruleset (JSON dumps separators comma-colon, UTF-8, no BOM, keys as returned by GET /rulesets/24026011):
+
+c2b50d61532da4fc96756683b6a5ee6fcc34023fe001e075a0079a25d2c1ecaa
+
+Live rule list in plain words:
+- required status checks, strict (branch must be up to date): build (ubuntu-latest), build (windows-latest), pr-body, audit
+- pull request required before merging
+- zero required approvals
+- stale reviews are not dismissed
+- force pushes blocked
+- deletions blocked
+- bypass list empty: not Jerry, not admins, nobody
+- no separate block-direct-commits rule beyond the PR requirement, so a future audit-bot report: commit on main is not extra-blocked by a second rule
+
+If the live ruleset JSON hashes differently, the clause and the metal have drifted.
