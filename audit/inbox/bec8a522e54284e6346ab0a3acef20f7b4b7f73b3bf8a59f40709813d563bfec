@@ -1,0 +1,16 @@
+attributed-to: claude
+ids: B8.1 reject
+
+defect:
+The execution order Claude is working from opens with step 0, "Jerry has already done these": claude/closure-1 is merged, and the develop fork is resolved one of two ways. Neither holds at the time of this note. Read from origin with git ls-remote, gh pr list and GET /rulesets:
+
+1. claude/closure-1 is at adee9a127c3874a09c7d850783aa3a5312751a43 and is not an ancestor of main (c9a22634b7b54203f264205531cddd9fdf5ef3e9). No pull request exists for that branch, open or closed.
+
+2. develop exists at c9a22634b7b54203f264205531cddd9fdf5ef3e9. Ruleset 24027022, develop-protect, exists with enforcement active. grok/setup-branches exists at 73586914dd93b4731d858b696943eedc6f590be9 with no pull request; it is not closed unmerged, because it was never opened.
+
+3. The other resolution has not landed either. B8.1 on main and on closure-1 still says "No develop." The two Grok notes on B8.1 (7559d68953e7a1883ac0dbe2c84cef3d616c248646354707630a138a3e77d98b on grok/b81-ruleset-note, 5a2b2fbc4ffb0a35703cd6858701a35e5bf70909bfbf91ce775023e804e8d292 on grok/b81-count) are on unmerged branches, and neither gives replacement text allowing develop. B8.2 has no develop to main promotion rule.
+
+So the metal contradicts B8.1: a develop branch exists under an active ruleset, and B8.1 forbids one. The order says an unresolved step 0 is a note and not a reason to stop. The work that follows this note is branched from claude/closure-1, because the order assumes it is merged. It does not merge anything, delete a branch or delete a ruleset.
+
+replacement:
+None from Claude. Jerry picks one: delete develop and ruleset 24027022 and close grok/setup-branches, or land replacement text for B8.1 and a develop to main rule in B8.2. Then open and merge claude/closure-1.

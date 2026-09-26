@@ -1,0 +1,28 @@
+attributed-to: claude
+ids: S12 accept, S1.3 accept, S1.5 accept, S3.5 accept, S7.6 accept, S7.8 accept, S9.1 accept, S13 accept, B1.2 accept
+
+defect:
+None in the clauses. SPEC.md's preamble says that where it is silent, a test is written before code. This note lists what the tests/chain/ files pin where SPEC is silent, so Opus writes to them and Grok can reject them before any code exists. If one of these is wrong, the fix goes in the test.
+
+1. Invocation (S7.8, S1.3). Every command runs in a child pwsh -NoProfile -NonInteractive. The child imports src/Genesis/Genesis.psd1 by explicit path and splats parameters. Its working directory is an empty folder that is neither the Heaven nor the GnupgHome. Stdin is redirected, so there is no TTY. Stdout is captured as raw bytes. "Exit X" means a non-zero process exit code with X as the second stdout line. "Exit 0" means process exit code 0. The tests do not constrain how the module produces the exit code.
+
+2. Output encoding (S3.6). The child does not set [Console]::OutputEncoding. The module must emit the S3.6 bytes itself on Windows and Linux. C-28 compares the first twenty bytes and requires LF or CRLF after them.
+
+3. Per-receipt status lines (S7.5, S7.6). Test-GenesisChain prints one line per receipt, on lines after the first, containing that receipt's 64-hex hash and its status token (REVOKED or valid). C-04 matches the hash and then \bREVOKED\b.
+
+4. Get-GenesisLineage takes -HeavenPath, -GnupgHome and -MaxReceipts, with no -Hash, and walks the whole chain (C-15, C-28). With six receipts, -MaxReceipts 6 exits 0.
+
+5. -Verbose (S3.5). operator_claims.attributed_to=<value> appears on stdout, on a line after the first. C-28 reads stdout only.
+
+6. PAPER (S9.1). Three lines, each LF-terminated, UTF-8 without a BOM. The receipts: hash covers filenames including .json, ordinal-sorted, each followed by LF. C-33 treats a wrong line 1 as a sheet mismatch as well.
+
+7. Temptation fixture (C-08). tests/fixtures/temptation/ holds exactly one *.psd1, a Genesis-shaped module exporting Test-GenesisChain. Neither that folder nor its parent is on PSModulePath. C-08 and C-08b do not assert the MUTANTS_SURVIVED or MUTANTS_KILLED lines, because S14 gives the Heaven runner no single-mutant entry point. They assert the verdict the runner reports: exit 0 from the temptation verifier, SIG_FAIL from the shipping one.
+
+8. C-12 (S1.5). "Before gpg" cannot be observed from outside, and the refuse-on-bad-tail walk (S11.2) runs gpg verify before any write. C-12 asserts IO, and that nothing in receipts/ or content/ changed.
+
+9. Keys and signatures in tests (S1.4, B5.3). The harness generates keys with the B5.2 batch (C-12 adds a protected key with a non-synthetic comment). It uses the S4.2 argv for export, sign and verify. Hand-built or rewritten receipts are canonicalised by a test oracle for the S3 value domain (objects, arrays, strings, integers) and never load src/. B1.2's "One JCS" is read as scoped to the module, as S5.2 scopes it to src/. If the oracle and Jcs.ps1 disagree, a test goes red. That is a finding.
+
+10. Resolve-GenesisContent has no parameter contract in S1. No C test calls it.
+
+replacement:
+None.

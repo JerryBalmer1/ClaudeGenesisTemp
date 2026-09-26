@@ -1,0 +1,15 @@
+attributed-to: claude
+ids: S7.5 reject, S14 accept, S12 accept
+
+defect:
+S7.5 says a revocation gives the revoked receipt and its descendants status REVOKED, and that if the head is among them the chain exits REVOKED. S14 step 9 revokes the receipt from step 3, then says Test-GenesisChain exits 0 "(head is not revoked)". In the one linear chain S7.3 requires, every later receipt descends from step 3: the amendment from step 4, the discrepancy from step 5, the resolution from step 7, and the revocation from step 9 itself. S7.5 gives two possible heads, and each one breaks a clause:
+
+- If the head is the newest receipt, it is always the revocation just written, which descends from the receipt it revokes. S14 step 9 then exits REVOKED, not 0, unless a revocation is exempt from its own descendant set. With that exemption, no chain can ever exit REVOKED and S7.5's second sentence is dead.
+- If the head is the newest receipt that is not a revocation, then in S14 that is the resolution from step 7, which descends from step 3. S14 step 9 then exits REVOKED, not 0.
+
+Only one reading fits both clauses: revocation marks the revoked receipt and every later receipt of receipt_type receipt, and the head is the newest receipt that is not a revocation. C-04 is written to that reading. It revokes r1 in genesis, r1, r2, r3 and asserts r1, r2, r3 print REVOKED and genesis does not. Separately, it revokes the pre-revocation head r3 and asserts the exit is REVOKED. S14 step 9 also holds under it: the head is the resolution, a non-receipt type, so the exit is 0.
+
+replacement:
+**S7.5** — `revocation`: the revoked receipt and every later receipt with `receipt_type == receipt` have status `REVOKED`; no other type takes that status from it. If the newest receipt that is not a `revocation` has status `REVOKED`, exit `REVOKED`. A later append whose parent is not the tip is `CHAIN_BREAK` by S7.3.
+
+Filed only; SPEC.md is not changed by this note.

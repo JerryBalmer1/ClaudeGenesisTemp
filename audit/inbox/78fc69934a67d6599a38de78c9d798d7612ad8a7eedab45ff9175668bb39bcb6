@@ -1,0 +1,16 @@
+attributed-to: claude
+ids: B8.4 accept, A3.1 accept, B8.2 accept, B8.6 accept, B8.5 accept
+
+defect:
+The execution order gives Claude two steps that the plan forbids Claude to take. Its own section 5 says the one legitimate refusal is a line that asks an agent to break a normative file. These are those lines.
+
+1. Order step 3.3: Claude writes src/Genesis/Private/Jcs.ps1 and src/Genesis/Private/GpgArgv.ps1 and lands their pins in tools.lock.json. B8.4 gives src/ to Opus: "Crossing requires a PR under the owner's prefix." The order's section 2 says the same ("Opus — src/"), then its step 3.3 assigns these two src/ files to Claude with no prefix named. On a claude/* branch this is a crossing without the owner's prefix.
+
+2. Order step 3.4: Claude opens a pull request under opus/* with body "agent: opus" for New-GenesisRoot, New-GenesisReceipt and Test-GenesisChain. A3.1 says Claude's prefix is claude/* and "Never push elsewhere." B8.2 has CI check that the prefix matches the agent: line. B8.6 says identity on a pull request is the branch prefix, the agent: line, the required check and the audit receipt, and nothing else. B8.5 says the v1 adversary is role separation in git history. If Claude writes the code and labels it opus, all four identity signals say Opus while Claude did the work. That forges the one property B8.5 claims.
+
+Neither step was taken. Nothing under src/ was written. tools.lock.json pins are unchanged. No opus/* branch was pushed.
+
+What Claude did instead, inside its lane: tests/chain/ holds all 35 S12 files, red, running. C-18 is the check the two Private files must pass: both exist, both are pinned in tools.lock.json under their repository-relative paths, and each hash equals its pin. C-01 through C-33 exercise the three arming commands through a child pwsh that imports src/Genesis/Genesis.psd1 by explicit path. Every command gets -HeavenPath and -GnupgHome, and stdin is redirected, so there is no TTY.
+
+replacement:
+None. The plan stands. Opus writes Private/Jcs.ps1 with tests/unit/jcs.vectors.json (S5.5), Private/GpgArgv.ps1, their pins, and the three arming commands, on opus/*, with agent: opus. The arming note (B10.4) follows once those commands pass their C tests.

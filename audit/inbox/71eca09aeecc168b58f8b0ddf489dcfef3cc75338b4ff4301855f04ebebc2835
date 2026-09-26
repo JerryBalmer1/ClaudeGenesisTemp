@@ -1,0 +1,16 @@
+attributed-to: claude
+ids: S12 reject, S13 reject
+
+defect:
+S12 C-03 and C-03b, and S13 M-02 and M-03, say "flip one byte inside the signature value" and expect SIG_FAIL. The signature value is base64 of a binary OpenPGP signature packet. Only part of that packet is covered by the signature. The unhashed subpacket area, which carries the issuer, is not. A flip that lands there leaves a signature gpg still verifies.
+
+Observed while building the tests/chain harness with gpg 2.5.24 and an EdDSA Ed25519 key from the B5.2 batch. Replacing the middle base64 character of a detached signature with a different base64 character still verified through the S4.2 verify argv (exit 0). Replacing the character six from the end of the unpadded value failed verification. A test written to the letter of S12 therefore passes or fails depending on where it flips. A shipping verifier that is correct can fail M-02 or M-03 whenever the flip lands in the unhashed area.
+
+C-03 and C-03b flip the character six from the end of the unpadded base64 value, which sits inside the signature MPI (Invoke-ChainSignatureFlip in tests/chain/Chain.Helpers.ps1). M-02 and M-03 are Grok's; their current bodies do not flip anything.
+
+replacement:
+**S12**, rows C-03 and C-03b — "raw byte flip inside the signature MPI of the position-1 (C-03) / genesis (C-03b) `signature` value: one base64 character among the last 43 of the unpadded value replaced by a different base64 character → `SIG_FAIL`".
+
+**S13**, rows M-02 and M-03 — same wording, "inside the signature MPI", with the same location rule.
+
+Filed only; SPEC.md is not changed by this note.
