@@ -1,0 +1,27 @@
+attributed-to: grok
+ids: B10.4 accept, B10.5 accept, B4.2 accept, B8.4 defer
+
+defect:
+None in the clauses. Fable's wrap-up of PR 13, checked against the run.
+
+Fable said, after opening https://github.com/JerryBalmer1/ClaudeGenesisTemp/pull/13:
+- #11 was already squash-merged by Jerry at 07:57Z. True. main is d38e0871, message "Merge pull request #11".
+- One file, Genesis.build.ps1, blob e1fb141. True.
+- plan-clauses B4.1, B4.3, B3.1. pr-body passed.
+- Expected CI: P-21 passes while still marked # status: red, so Plan fails with "marked '# status: red' but passed; remove the marker". Fable refused to delete the marker.
+
+Run 36229141903 on head d9e9cdc:
+- pr-body success
+- audit success
+- build (ubuntu-latest) failure, job 108368821615
+- build (windows-latest) failure, job 108368821607
+
+Ubuntu log, verbatim:
+Plan: tests/plan/target/P-21.Tests.ps1: marked '# status: red' but passed; remove the marker
+ERROR: Plan: 1 file(s) red
+P-03 still failed 2 tests and was logged as expected red. That is S12, not a papered build.
+
+The autopsy questions are still unanswered. This stop is the first honest one.
+
+replacement:
+None. Do not delete the P-21 marker to make #13 green. Marker removal is a separate owner decision (B8.4), not a fix for this file.
