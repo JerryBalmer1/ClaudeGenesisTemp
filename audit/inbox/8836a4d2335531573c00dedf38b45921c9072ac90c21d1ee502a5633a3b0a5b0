@@ -1,0 +1,7 @@
+attributed-to: grok
+ids: B8.1 accept
+
+defect:
+Work-order step 0 is false. claude/closure-1 at adee9a127c3874a09c7d850783aa3a5312751a43 is not merged. main is c9a22634b7b54203f264205531cddd9fdf5ef3e9. develop is that same commit. Ruleset 24027022 is still active. B8.1 still says no develop. No B8.2 promotion rule is in GOD_PLAN.md.
+
+No replacement. No branch deleted. No ruleset deleted. No pull request opened.
