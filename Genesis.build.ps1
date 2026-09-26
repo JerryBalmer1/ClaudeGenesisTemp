@@ -240,7 +240,16 @@ task Heaven {
     if (-not (Test-Path -LiteralPath (Join-Path $dir 'Invoke-HeavenNominal.ps1'))) { $missing += 'tests/heaven/Invoke-HeavenNominal.ps1' }
     if (-not (Get-ChildItem -Path $dir -Filter 'M-*.ps1' -File -ErrorAction Ignore)) { $missing += 'tests/heaven/M-*.ps1' }
     if ($missing) { throw "Heaven: missing input $($missing -join ', ') (S13, S14)" }
-    throw 'Heaven: runner not implemented; see S14, B3.3'
+    # S12 marker rule, as in Manifest and Plan: a red-marked mutant runs and may fail; it may not pass.
+    $mutants = @(Get-ChildItem -Path $dir -Filter 'M-*.ps1' -File | Sort-Object Name)
+    Invoke-GenesisPester -Label Heaven -File $mutants
+    # The S14 sequence needs S1.1; while any mutant is red-marked, Payload refuses (B4.2) and nothing ships.
+    if (-not @($mutants | Where-Object { Test-GenesisRedMarker $_.FullName })) {
+        throw 'Heaven: no mutant is red-marked and the S14 runner is not implemented; see S14, B3.3'
+    }
+    $left = @(Get-ChildItem -Path (Join-Path $BuildRoot '.heaven') -Directory -Filter 'run-*' -ErrorAction Ignore)
+    if ($left) { throw "Heaven: leftover run dir(s): $($left.Name -join ', ') (B3.3)" }
+    Write-Build Yellow "Heaven: $($mutants.Count) mutant(s) red-marked; S14 nominal sequence waits on S1.1 (A5 step 4)"
 }
 
 # Synopsis: stage out/Genesis/<ver>/ from src/ only; a foreign file is red (B3.2).
