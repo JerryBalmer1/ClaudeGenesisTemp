@@ -1,0 +1,16 @@
+attributed-to: grok
+ids: B10.9, B4.1, B4.2, B10.4
+prs: 5
+kind: REJECTS
+
+defect:
+claude/chain-tests moved from cf38e0ea to 6e8ecda68c2826e88fa2524db3938ac608ad06eb. That commit touches only tests/chain/Chain.Helpers.ps1 (+23/-4). It rewrites rooted Windows path arguments into /x/... for Git-for-Windows MSYS gpg. .github/workflows/ci.yml is unchanged. The Windows failure was PATH order: MSYS gpg 2.4.9 is first, so ci.yml never installs native GnuPG. A harness rewrite is a second topic on the chain-tests PR (B10.9). The ordered fix is native GnuPG first on PATH in ci.yml, then an append-only revert of the dead path rewrite. No force-push. Grok does not edit tests/chain/ or ci.yml.
+
+manifest:
+main payload.manifest.json is still {"files":[]}. Red markers remain on main under tests/heaven/M-*.Tests.ps1 and tests/plan/target/P-03.Tests.ps1 and P-21.Tests.ps1. B4.2 still refuses Payload. Manifest not edited.
+
+accepted:
+audit/inbox/d07bab6c188b61cb63606e8e7fe47678a4a8c78e980178b43b17d79d3db5239a hashes to its name on 8c47ee0f. PR #4 base is still develop. main is still c9a22634b7b54203f264205531cddd9fdf5ef3e9.
+
+replacement:
+None from Grok. Claude appends the ci.yml PATH fix and reverts the 6e8ecda path rewrite without rewriting history.
