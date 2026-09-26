@@ -39,34 +39,18 @@ function Get-ChainGpg {
         $cmd = Get-Command -Name gpg -CommandType Application -ErrorAction Ignore | Select-Object -First 1
         if (-not $cmd) { throw 'chain harness: gpg not found on PATH (B5.1)' }
         $lock = Get-Content -LiteralPath (Join-Path $script:ChainRoot 'tools.lock.json') -Raw | ConvertFrom-Json -AsHashtable
-        $version = @(& $cmd.Source --version)
-        $line = $version[0]
+        $line = @(& $cmd.Source --version)[0]
         if ($line -notmatch '(\d+\.\d+(\.\d+)?)' -or [version]$Matches[1] -lt [version]$lock.gpg.MinVersion) {
             throw "chain harness: '$line' at $($cmd.Source) is below gpg $($lock.gpg.MinVersion) (S4.2)"
         }
-        # Git for Windows puts an MSYS gpg on PATH (windows-latest ships 2.4.x). It reports a /-rooted Home and
-        # treats C:\... as relative to the working directory, so its path arguments go in /c/... form.
-        $script:ChainGpgMsys = $IsWindows -and [bool]($version -match '^Home: /')
         $script:ChainGpg = $cmd.Source
     }
     $script:ChainGpg
 }
 
-function ConvertTo-ChainGpgArgv([string[]]$Argv) {
-    # S4.2 argv unchanged; only the substituted <…> paths change form, and only for an MSYS gpg.
-    $null = Get-ChainGpg
-    foreach ($a in $Argv) {
-        if ($script:ChainGpgMsys -and $a -match '^([A-Za-z]):[\\/](.*)$') {
-            '/' + $Matches[1].ToLowerInvariant() + '/' + ($Matches[2] -replace '\\', '/')
-        }
-        else { $a }
-    }
-}
-
 function Invoke-ChainGpg {
     param([string[]]$Argv, [string]$Stdin)
     $gpg = Get-ChainGpg
-    $Argv = @(ConvertTo-ChainGpgArgv $Argv)
     $PSNativeCommandUseErrorActionPreference = $false
     $out = if ($PSBoundParameters.ContainsKey('Stdin')) { $Stdin | & $gpg @Argv 2>&1 } else { & $gpg @Argv 2>&1 }
     if ($LASTEXITCODE -ne 0) { throw "chain harness: gpg $($Argv -join ' ') exited $LASTEXITCODE`n$($out -join "`n")" }
@@ -112,8 +96,7 @@ function New-ChainKey {
 
 function Get-ChainSecretFingerprint([string]$GnupgHome) {
     $PSNativeCommandUseErrorActionPreference = $false
-    $argv = @(ConvertTo-ChainGpgArgv @('--batch', '--no-tty', '--homedir', $GnupgHome, '--list-secret-keys', '--with-colons'))
-    $lines = @(& (Get-ChainGpg) @argv 2>$null)
+    $lines = @(& (Get-ChainGpg) --batch --no-tty --homedir $GnupgHome --list-secret-keys --with-colons 2>$null)
     $primary = $false
     foreach ($l in $lines) {
         if ($l -like 'sec:*') { $primary = $true; continue }
@@ -158,8 +141,7 @@ function Test-ChainSignature {
         $keyring = "$tempHome/keyring.kbx"
         $null = Invoke-ChainGpg -Argv @('--batch', '--no-tty', '--homedir', $tempHome, '--no-default-keyring', '--keyring', $keyring, '--trust-model', 'always', '--import', $keyFile)
         $PSNativeCommandUseErrorActionPreference = $false
-        $argv = @(ConvertTo-ChainGpgArgv @('--batch', '--no-tty', '--homedir', $tempHome, '--no-default-keyring', '--keyring', $keyring, '--trust-model', 'always', '--verify', $sigFile, $payloadFile))
-        $null = & (Get-ChainGpg) @argv 2>&1
+        $null = & (Get-ChainGpg) --batch --no-tty --homedir $tempHome --no-default-keyring --keyring $keyring --trust-model always --verify $sigFile $payloadFile 2>&1
         $LASTEXITCODE -eq 0
     }
     finally {
@@ -173,8 +155,7 @@ function Stop-ChainGpgAgent([string]$GnupgHome) {
     $gpgconf = Join-Path (Split-Path -Parent (Get-ChainGpg)) ($IsWindows ? 'gpgconf.exe' : 'gpgconf')
     if (-not (Test-Path -LiteralPath $gpgconf)) { $gpgconf = 'gpgconf' }
     $PSNativeCommandUseErrorActionPreference = $false
-    $argv = @(ConvertTo-ChainGpgArgv @('--homedir', $GnupgHome, '--kill', 'all'))
-    $null = & $gpgconf @argv 2>&1
+    $null = & $gpgconf --homedir $GnupgHome --kill all 2>&1
 }
 
 # ---------------------------------------------------------------------------------------------------------
