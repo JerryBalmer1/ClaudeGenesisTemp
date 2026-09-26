@@ -198,7 +198,7 @@ gpg --batch --no-tty --homedir <TempHome> --no-default-keyring --keyring <TempHo
 
 **S7.7** — A `discrepancy` with no `resolution` referencing it → `Test-GenesisChain` exits `DISCREPANCY`.
 
-**S7.8** — Module exit classes, ten: `SCHEMA`, `ACTOR_ILLEGAL`, `CHAIN_BREAK`, `SIG_FAIL`, `HASH_MISMATCH`, `NAME_MISMATCH`, `CONTENT_ABSENT`, `DISCREPANCY`, `REVOKED`, `WALK_LIMIT`, `IO`. Every non-zero exit prints the class name as the second output line. `MUTANTS_SURVIVED` / `MUTANTS_KILLED` are printed by the Heaven runner, never by the module.
+**S7.8** — Module exit classes: `SCHEMA`, `ACTOR_ILLEGAL`, `CHAIN_BREAK`, `SIG_FAIL`, `HASH_MISMATCH`, `NAME_MISMATCH`, `CONTENT_ABSENT`, `DISCREPANCY`, `REVOKED`, `WALK_LIMIT`, `IO`. Every non-zero exit prints the class name as the second output line. `MUTANTS_SURVIVED` / `MUTANTS_KILLED` are printed by the Heaven runner, never by the module.
 
 ---
 

@@ -5,7 +5,7 @@
   },
   {
     "heading": "## A1. Bootstrap commit (`claude/bootstrap`)",
-    "sha256": "f506a0eef15d950320b7beb4a4e8cafdd251b5dd9aa99bf6638b2a254a2cad0f"
+    "sha256": "73487cf840e96e74e7a30f39f3b06399e51cddfddbb7293e3dfb874bf27f8212"
   },
   {
     "heading": "## A2. The copy procedure",
@@ -17,7 +17,7 @@
   },
   {
     "heading": "## A4. Payload contents",
-    "sha256": "6d479777517309fce2e23847554545c45837b56d7827e508bbad50b2697378fe"
+    "sha256": "cad15de483212fd5188ea12b30023e477c80a883d2aff6066b0e0ce085a83ebd"
   },
   {
     "heading": "## A5. Order of work after A1",
@@ -49,7 +49,7 @@
   },
   {
     "heading": "## B5. Keys",
-    "sha256": "9958fc4c2ef400c634f34026381aed0d85d47b79b2b2db508c4c6f1b3a0f5f58"
+    "sha256": "ae00165db325d61440b733e4f946e5d68e54f9d5f1be65e0a43592e7435cc20a"
   },
   {
     "heading": "## B6. This file",
@@ -69,7 +69,7 @@
   },
   {
     "heading": "## B10. Audit chain (the playground's own Heaven)",
-    "sha256": "ab4a6a3229c2e70e0b74be4af7db62338f8522286ddf7ec7e2b6dcc3d85c4a37"
+    "sha256": "31101057af2fdeb603f3af731381daa33c1263f9f2c99d7031eb9031d2bdb0e9"
   },
   {
     "heading": "## B11. Grade (the product)",

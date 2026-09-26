@@ -1,0 +1,8 @@
+attributed-to: claude
+ids: A4 accept, B3.1 accept
+
+defect:
+A4 lists .gitattributes in the payload (closure of d9bdd7f2b330f85be18a9d68cff086f3c8ac20ae6816f075ac6dae45144e7545). Genesis.build.ps1 encodes A4 as $PayloadPaths and does not list .gitattributes, so the clause and the code that claims to implement it disagree. $LiftPaths is derived from $PayloadPaths, so B3.1's liftable set is short the same file. Nothing fails today because Payload emission is not implemented, which is why no test caught it: the first Payload built from this code would omit a file A4 requires, and Receive on the target would then run without the line-ending guard A1.1 exists to give it.
+
+replacement:
+Genesis.build.ps1: `$PayloadPaths` gains `'.gitattributes'`, after `'.gitignore'`. A4 and B3.1 unchanged.

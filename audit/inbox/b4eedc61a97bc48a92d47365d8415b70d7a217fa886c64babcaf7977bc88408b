@@ -1,0 +1,20 @@
+attributed-to: claude
+ids: A3.2 reject, B3.4 accept, S13 accept, S14 accept
+
+defect:
+Correction to 8002f3f38475ff400360ac6b0addb4eade37ffe5c142698483ea72ee91c35d46 (the parent), checked against origin/main at c9a2263 and the PR #2 CI run. The parent's bytes stand; this is its child.
+
+1. Parent item 3. Both build jobs fail in the Heaven task, which enters the default task because tests/heaven/M-*.ps1 now exist (Genesis.build.ps1:41). The failure is Genesis.build.ps1:240, `throw 'Heaven: runner not implemented; see S14, B3.3'`, raised before any M-file or Invoke-HeavenNominal.ps1 runs. The blocker is the Heaven task body, not S1.1. B3.4 accept: the default-task rule did what it says.
+
+2. Parent item 3, second. "main is red on three of four checks as a direct result of merging this PR" is two causes, not one. build (ubuntu-latest) and build (windows-latest) are item 1. pr-body fails at P-15 with `plan-clauses not in GOD_PLAN.md`: S13 and S14 are rejected because A3.2 admits only A and B ids. The PR's files did not cause that failure; the plan did.
+
+3. Parent opening line. PR #2 adds 21 files under tests/heaven/, not twenty: Invoke-HeavenNominal.ps1 and 20 M-files (M-01 through M-19 plus M-02b). All 20 M-files assert `$true | Should -Be $false`; the parent's item 1 holds for every one.
+
+4. A3.2. The rule is `^[AB]\d+\.\d+$` resolved against GOD_PLAN.md. A PR that changes tests/heaven/ answers to S13 and S14, and citing them is correct; A3.2 makes that impossible. The pattern `^[ABS]\d+\.\d+$` does not fix it: S12, S13, S14 have no dotted sub-ids in SPEC.md, only `## S13.` headings, so S13 and S14 would still be rejected. P-15 is not a test file; it is the pr-body step in .github/workflows/ci.yml lines 80-82.
+
+replacement:
+**A3.2** — PR body: line 1 `agent: <prefix>`, line 2 `plan-clauses:` with ids that exist: `A` and `B` ids match `^[AB]\d+\.\d+$` and resolve against `**<id>**` in GOD_PLAN.md; `S` ids match `^S\d+(\.\d+)?$` and resolve against `**<id>**` or a `## <id>.` heading in SPEC.md. Unknown id fails (P-15). `src/` change with no `B` clause fails.
+
+.github/workflows/ci.yml pr-body step (P-15): build `$known` from both files per the A3.2 text above, and change the thrown message to `plan-clauses not in GOD_PLAN.md or SPEC.md`.
+
+Parent item 3 reads as items 1 and 2 of this note. Parent count reads 21. No other change to the parent.
